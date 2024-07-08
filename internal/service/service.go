@@ -1,5 +1,4 @@
-// internal/service.go
-package internal
+package service
 
 import (
 	"encoding/json"
@@ -9,11 +8,13 @@ import (
 	"net/http"
 	"regexp"
 	"time"
+
+	"github.com/harshinsecurity/mantramatch/internal/config"
 )
 
 // MatchServices finds all services that match the given API key
-func MatchServices(services []Service, apiKey string) []Service {
-	var matches []Service
+func MatchServices(services []config.Service, apiKey string) []config.Service {
+	var matches []config.Service
 	for _, service := range services {
 		regex := regexp.MustCompile(service.Regex)
 		if regex.MatchString(apiKey) {
@@ -24,7 +25,7 @@ func MatchServices(services []Service, apiKey string) []Service {
 }
 
 // VerifyKey checks if the given API key is valid for the specified service
-func VerifyKey(service Service, apiKey string, timeout int, verbose bool) bool {
+func VerifyKey(service config.Service, apiKey string, timeout int, verbose bool) bool {
 	client := &http.Client{Timeout: time.Duration(timeout) * time.Second}
 
 	req, err := createRequest(service, apiKey)
@@ -50,7 +51,7 @@ func VerifyKey(service Service, apiKey string, timeout int, verbose bool) bool {
 }
 
 // createRequest creates an http.Request for the given service and API key
-func createRequest(service Service, apiKey string) (*http.Request, error) {
+func createRequest(service config.Service, apiKey string) (*http.Request, error) {
 	req, err := http.NewRequest(service.VerifyMethod, service.VerifyURL, nil)
 	if err != nil {
 		return nil, err
@@ -64,7 +65,7 @@ func createRequest(service Service, apiKey string) (*http.Request, error) {
 }
 
 // isValidResponse checks if the API response indicates a valid key
-func isValidResponse(service Service, statusCode int, body []byte, verbose bool) bool {
+func isValidResponse(service config.Service, statusCode int, body []byte, verbose bool) bool {
 	if statusCode != http.StatusOK {
 		logError(fmt.Sprintf("%s returned non-200 status code: %d", service.Name, statusCode), verbose)
 		return false

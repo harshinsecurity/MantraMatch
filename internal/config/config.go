@@ -1,5 +1,4 @@
-// internal/config.go
-package internal
+package config
 
 import (
 	"fmt"
