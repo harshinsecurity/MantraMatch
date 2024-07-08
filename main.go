@@ -1,4 +1,3 @@
-// cmd/mantramatch/main.go
 package main
 
 import (
@@ -8,7 +7,8 @@ import (
 	"path/filepath"
 	"sync"
 
-	"github.com/harshinsecurity/mantramatch/internal"
+	"github.com/harshinsecurity/mantramatch/internal/config"
+	"github.com/harshinsecurity/mantramatch/internal/service"
 )
 
 var (
