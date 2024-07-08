@@ -1,4 +1,4 @@
-package main
+package cmd
 
 import (
 	"fmt"
@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 )
 
-func main() {
+func InstallConfig() (error) {
 	homeDir, err := os.UserHomeDir()
 	if err != nil {
 		fmt.Printf("Error getting user home directory: %v\n", err)
@@ -42,5 +42,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	fmt.Println("Config file installed successfully!")
+	fmt.Println("Config file installed successfully from main file!")
+
+	return err
 }

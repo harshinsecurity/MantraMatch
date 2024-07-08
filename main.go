@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 	"sync"
 
+	configGen "github.com/harshinsecurity/mantramatch/cmd/install"
 	"github.com/harshinsecurity/mantramatch/internal/config"
 	"github.com/harshinsecurity/mantramatch/internal/service"
 )
@@ -15,6 +16,7 @@ var (
 	configFile string
 	verbose    bool
 	timeout    int
+	isInstalled = false
 )
 
 func init() {
@@ -28,7 +30,7 @@ func init() {
 }
 
 func usage() {
-	fmt.Fprintf(os.Stderr, "MantraMatch: A tool to identify and verify API keys\n\n")
+	fmt.Fprintf(os.Stderr, "MantraMatch: A tool to identify and verify API keys\n\n") // logger debuger
 	fmt.Fprintf(os.Stderr, "Usage: mantramatch [options] <api-key>\n\n")
 	fmt.Fprintf(os.Stderr, "Options:\n")
 	flag.PrintDefaults()
@@ -39,6 +41,16 @@ func usage() {
 }
 
 func main() {
+	if !isInstalled {
+		err := configGen.InstallConfig()
+		if err != nil {
+			fmt.Print("error running install.go")
+		} else {
+			fmt.Print("config file generated//")
+			isInstalled=false
+		}
+	}
+
 	if len(flag.Args()) != 1 {
 		flag.Usage()
 		os.Exit(1)
