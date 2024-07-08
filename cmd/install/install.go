@@ -1,4 +1,3 @@
-// scripts/install.go
 package main
 
 import (
@@ -22,7 +21,8 @@ func main() {
 		os.Exit(1)
 	}
 
-	srcConfig, err := os.Open("configs/config.yaml")
+	// Update this path to the correct location of your config.yaml file
+	srcConfig, err := os.Open("config.yaml")
 	if err != nil {
 		fmt.Printf("Error opening source config file: %v\n", err)
 		os.Exit(1)
