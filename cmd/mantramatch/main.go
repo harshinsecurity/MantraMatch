@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 	"sync"
 
-	"github.com/yourusername/mantramatch/internal"
+	"github.com/harshinsecurity/mantramatch/internal"
 )
 
 var (
