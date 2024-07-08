@@ -9,8 +9,6 @@ MantraMatch is an open-source tool designed to identify and verify API keys acro
 - [How It Works](#how-it-works)
 - [Configuration](#configuration)
 - [Areas for Improvement](#areas-for-improvement)
-- [Contributing](#contributing)
-- [License](#license)
 
 ## Installation
 
