@@ -11,6 +11,7 @@ import (
 
 	"github.com/harshinsecurity/mantramatch/internal/config"
 	"github.com/harshinsecurity/mantramatch/internal/service"
+	"github.com/schollz/progressbar/v3"
 )
 
 //go:embed config.yaml
@@ -23,6 +24,14 @@ var (
 	timeout    int
 	listFile   string
 )
+
+const logo = `
+ __  __             _             __  __       _       _     
+|  \/  | __ _ _ __ | |_ _ __ __ _|  \/  | __ _| |_ ___| |__  
+| |\/| |/ _` + "`" + ` | '_ \| __| '__/ _` + "`" + ` | |\/| |/ _` + "`" + ` | __/ __| '_ \ 
+| |  | | (_| | | | | |_| | | (_| | |  | | (_| | || (__| | | |
+|_|  |_|\__,_|_| |_|\__|_|  \__,_|_|  |_|\__,_|\__\___|_| |_|
+`
 
 func init() {
 	flag.Usage = usage
@@ -37,16 +46,21 @@ func init() {
 }
 
 func usage() {
+	fmt.Println(logo)
 	fmt.Fprintf(os.Stderr, "MantraMatch: A tool to identify and verify API keys\n\n")
 	fmt.Fprintf(os.Stderr, "Usage: mantramatch [options] <api-key>\n\n")
 	fmt.Fprintf(os.Stderr, "Options:\n")
 	flag.PrintDefaults()
-	fmt.Fprintf(os.Stderr, "\nExample:\n")
+	fmt.Fprintf(os.Stderr, "\nExamples:\n")
 	fmt.Fprintf(os.Stderr, "  mantramatch -verbose -timeout=15 your_api_key_here\n")
 	fmt.Fprintf(os.Stderr, "  mantramatch -silent -list=keys.txt\n")
 }
 
 func main() {
+	if !silent {
+		fmt.Println(logo)
+	}
+
 	if err := ensureConfig(); err != nil {
 		fmt.Printf("Error ensuring config: %v\n", err)
 		os.Exit(1)
@@ -83,6 +97,10 @@ func ensureConfig() error {
 		if err := os.WriteFile(configFile, embeddedConfig, 0644); err != nil {
 			return fmt.Errorf("failed to write config file: %w", err)
 		}
+
+		if !silent {
+			fmt.Printf("Config file created at: %s\n", configFile)
+		}
 	}
 	return nil
 }
@@ -113,25 +131,33 @@ func processKeyList(cfg *config.Config, filename string) {
 	defer file.Close()
 
 	scanner := bufio.NewScanner(file)
+	var keys []string
+	for scanner.Scan() {
+		keys = append(keys, scanner.Text())
+	}
+
+	if err := scanner.Err(); err != nil {
+		fmt.Printf("Error reading file: %v\n", err)
+		os.Exit(1)
+	}
+
 	var wg sync.WaitGroup
 	semaphore := make(chan struct{}, 10) // Limit concurrency to 10 goroutines
 
-	for scanner.Scan() {
-		apiKey := scanner.Text()
+	bar := progressbar.Default(int64(len(keys)))
+
+	for _, apiKey := range keys {
 		wg.Add(1)
 		semaphore <- struct{}{}
 		go func(key string) {
 			defer wg.Done()
 			defer func() { <-semaphore }()
 			processKey(cfg, key)
+			bar.Add(1)
 		}(apiKey)
 	}
 
 	wg.Wait()
-
-	if err := scanner.Err(); err != nil {
-		fmt.Printf("Error reading file: %v\n", err)
-	}
 }
 
 func verifyKeys(services []config.Service, apiKey string) map[string]bool {
