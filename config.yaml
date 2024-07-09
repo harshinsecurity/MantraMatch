@@ -1,337 +1,30 @@
+# These are the sample yaml file.
 services:
-  - name: "ABTasty"
-    regex: "^[a-zA-Z0-9]{32}$"
-    verify_url: "https://api.abtasty.com/api/v1/accounts"
-    verify_method: "GET"
-    headers:
-      "x-api-key": "%s"
-
-  - name: "Algolia"
-    regex: "^[a-zA-Z0-9]{32}$"
-    verify_url: "https://www.algolia.com/api/1/keys/%s"
-    verify_method: "GET"
-    headers:
-      "X-Algolia-API-Key": "%s"
-      "X-Algolia-Application-Id": "placeholder"
-
-  - name: "Amplitude"
-    regex: "^[a-f0-9]{32}$"
-    verify_url: "https://amplitude.com/api/2/projects"
-    verify_method: "GET"
-    headers:
-      "Authorization": "Api-Key %s"
-
-  - name: "Asana"
-    regex: "^[0-9]{16}:[a-zA-Z0-9]{32}$"
-    verify_url: "https://app.asana.com/api/1.0/users/me"
-    verify_method: "GET"
-    headers:
-      "Authorization": "Bearer %s"
-
-  - name: "AWS"
-    regex: "^AKIA[0-9A-Z]{16}$"
-    verify_url: "https://sts.amazonaws.com/?Action=GetCallerIdentity&Version=2011-06-15"
-    verify_method: "POST"
-    headers:
-      "Authorization": "AWS4-HMAC-SHA256 Credential=%s"
-
-  - name: "Azure Application Insights"
-    regex: "^[a-f0-9]{32}$"
-    verify_url: "https://api.applicationinsights.io/v1/apps/%s/metrics/requests/count"
-    verify_method: "GET"
-    headers:
-      "x-api-key": "%s"
-
-  - name: "Bitly"
-    regex: "^[0-9a-zA-Z_]{5,31}$"
-    verify_url: "https://api-ssl.bitly.com/v3/shorten?access_token=%s&longUrl=https://www.google.com"
-    verify_method: "GET"
-
-  - name: "Branch.io"
-    regex: "^key_live_[a-zA-Z0-9]{32}$"
-    verify_url: "https://api2.branch.io/v1/app/%s"
-    verify_method: "GET"
-    headers:
-      "branch_secret": "%s"
-
-  - name: "BrowserStack"
-    regex: "^[a-zA-Z0-9]{31}$"
-    verify_url: "https://api.browserstack.com/automate/plan.json"
-    verify_method: "GET"
-    headers:
-      "Authorization": "Basic %s"
-
-  - name: "Buildkite"
-    regex: "^[a-f0-9]{40}$"
-    verify_url: "https://api.buildkite.com/v2/access-token"
-    verify_method: "GET"
-    headers:
-      "Authorization": "Bearer %s"
-
-  - name: "ButterCMS"
-    regex: ".*"
-    verify_url: "https://api.buttercms.com/v2/posts/?auth_token=%s"
-    verify_method: "GET"
-
-  - name: "Calendly"
-    regex: ".*"
-    verify_url: "https://calendly.com/api/v1/users/me"
-    verify_method: "GET"
-    headers:
-      "X-TOKEN": "%s"
-
-  - name: "CircleCI"
-    regex: "^[a-f0-9]{40}$"
-    verify_url: "https://circleci.com/api/v1.1/me"
-    verify_method: "GET"
-    headers:
-      "Circle-Token": "%s"
-
-  - name: "Cloudflare"
-    regex: "^[a-zA-Z0-9_-]{37}$"
-    verify_url: "https://api.cloudflare.com/client/v4/user/tokens/verify"
-    verify_method: "GET"
-    headers:
-      "Authorization": "Bearer %s"
-
-  - name: "Contentful"
-    regex: "^[a-f0-9]{64}$"
-    verify_url: "https://cdn.contentful.com/spaces/SPACE_ID_HERE/entries?access_token=%s"
-    verify_method: "GET"
-
-  - name: "Cypress"
-    regex: ".*"
-    verify_url: "https://api.cypress.io/runs"
-    verify_method: "POST"
-    headers:
-      "x-route-version": "4"
-      "x-os-name": "darwin"
-      "x-cypress-version": "5.5.0"
-      "Content-Type": "application/json"
-
-  - name: "Datadog"
-    regex: "^[a-f0-9]{32}$"
-    verify_url: "https://api.datadoghq.com/api/v1/validate"
-    verify_method: "GET"
-    headers:
-      "DD-API-KEY": "%s"
-
-  - name: "DigitalOcean"
-    regex: "^[0-9a-fA-F]{64}$"
-    verify_url: "https://api.digitalocean.com/v2/account"
-    verify_method: "GET"
-    headers:
-      "Authorization": "Bearer %s"
-
-  - name: "Discord"
-    regex: "^[a-zA-Z0-9_-]{59}$"
-    verify_url: "https://discordapp.com/api/users/@me"
-    verify_method: "GET"
-    headers:
-      "Authorization": "Bot %s"
-
-  - name: "Dropbox"
-    regex: "^[a-zA-Z0-9_-]{64}$"
-    verify_url: "https://api.dropboxapi.com/2/users/get_current_account"
-    verify_method: "POST"
-    headers:
-      "Authorization": "Bearer %s"
-
-  - name: "Facebook"
-    regex: "^EAA[a-zA-Z0-9]{60,}$"
-    verify_url: "https://graph.facebook.com/me?access_token=%s"
-    verify_method: "GET"
-
-  - name: "Facebook AppSecret"
-    regex: "^[a-f0-9]{32}$"
-    verify_url: "https://graph.facebook.com/oauth/access_token?client_id=ID_HERE&client_secret=%s&redirect_uri=&grant_type=client_credentials"
-    verify_method: "GET"
-
-  - name: "Firebase"
-    regex: "^[0-9a-zA-Z_-]{39}$"
-    verify_url: "https://identitytoolkit.googleapis.com/v1/accounts:signInWithCustomToken?key=%s"
-    verify_method: "POST"
-    headers:
-      "Content-Type": "application/json"
-
   - name: "GitHub"
     regex: "^gh[pousr]_[A-Za-z0-9_]{36}$"
     verify_url: "https://api.github.com/user"
     verify_method: "GET"
     headers:
       "Authorization": "token %s"
+    validation:
+      status_code: 200
+      content_type: "application/json"
+      success_indicator:
+        type: "json_key_exists"
+        key: "login"
 
-  - name: "GitLab"
-    regex: "^glpat-[a-zA-Z0-9_-]{20}$"
-    verify_url: "https://gitlab.com/api/v4/projects"
-    verify_method: "GET"
-    headers:
-      "PRIVATE-TOKEN": "%s"
-
-  - name: "Google Cloud"
-    regex: ".*"
-    verify_url: "https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=%s"
-    verify_method: "GET"
-
-  - name: "Google Maps"
-    regex: "^AIza[0-9A-Za-z-_]{35}$"
-    verify_url: "https://maps.googleapis.com/maps/api/staticmap?center=45%2C10&zoom=7&size=400x400&key=%s"
-    verify_method: "GET"
-
-  - name: "Grafana"
-    regex: "^eyJrIjoi[A-Za-z0-9-_=]{100,}$"
-    verify_url: "http://your-grafana-server-url.com/api/user"
+  - name: "Stripe"
+    regex: "^sk_live_[0-9a-zA-Z]{24}$"
+    verify_url: "https://api.stripe.com/v1/balance"
     verify_method: "GET"
     headers:
       "Authorization": "Bearer %s"
-
-  - name: "Heroku"
-    regex: "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
-    verify_url: "https://api.heroku.com/apps"
-    verify_method: "POST"
-    headers:
-      "Accept": "application/vnd.heroku+json; version=3"
-      "Authorization": "Bearer %s"
-
-  - name: "HubSpot"
-    regex: "^[a-f0-9]{32}$"
-    verify_url: "https://api.hubapi.com/owners/v2/owners?hapikey=%s"
-    verify_method: "GET"
-
-  - name: "Imgur"
-    regex: "^[a-zA-Z0-9]{14}$"
-    verify_url: "https://api.imgur.com/3/account/me"
-    verify_method: "GET"
-    headers:
-      "Authorization": "Client-ID %s"
-
-  - name: "Instagram"
-    regex: "^IGQ[a-zA-Z0-9_-]{177}$"
-    verify_url: "https://graph.instagram.com/me?fields=id,username&access_token=%s"
-    verify_method: "GET"
-
-  - name: "Ipstack"
-    regex: "^[a-f0-9]{32}$"
-    verify_url: "https://api.ipstack.com/check?access_key=%s"
-    verify_method: "GET"
-
-  - name: "Jira"
-    regex: ".*"
-    verify_url: "https://your-domain.atlassian.net/rest/api/2/issue/createmeta"
-    verify_method: "GET"
-    headers:
-      "Authorization": "Basic %s"
-
-  - name: "LinkedIn"
-    regex: ".*"
-    verify_url: "https://api.linkedin.com/v2/me"
-    verify_method: "GET"
-    headers:
-      "Authorization": "Bearer %s"
-
-  - name: "Mailchimp"
-    regex: "^[0-9a-f]{32}-us[0-9]{1,2}$"
-    verify_url: "https://<dc>.api.mailchimp.com/3.0/"
-    verify_method: "GET"
-    headers:
-      "Authorization": "apikey %s"
-
-  - name: "Mailgun"
-    regex: "^key-[0-9a-zA-Z]{32}$"
-    verify_url: "https://api.mailgun.net/v3/domains"
-    verify_method: "GET"
-    headers:
-      "Authorization": "Basic %s"
-
-  # - name: "Mapbox"
-  #   regex: "^pk\\.[a-zA-Z0-9]{60,}$"
-  #   verify_url: "https://api.mapbox.com/geocoding/v5/mapbox.places/Los%20Angeles.json?access_token=%s"
-  #   verify_method: "GET"
-
-  - name: "Microsoft Azure"
-    regex: "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
-    verify_url: "https://management.azure.com/tenants?api-version=2020-01-01"
-    verify_method: "GET"
-    headers:
-      "Authorization": "Bearer %s"
-
-  - name: "New Relic"
-    regex: "^NRAK-[A-Z0-9]{27}$"
-    verify_url: "https://api.newrelic.com/v2/applications.json"
-    verify_method: "GET"
-    headers:
-      "X-Api-Key": "%s"
-
-  - name: "npm"
-    regex: "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
-    verify_url: "https://registry.npmjs.org/-/whoami"
-    verify_method: "GET"
-    headers:
-      "Authorization": "Bearer %s"
-
-  - name: "OpenAI"
-    regex: "^sk-[a-zA-Z0-9]{48}$"
-    verify_url: "https://api.openai.com/v1/engines"
-    verify_method: "GET"
-    headers:
-      "Authorization": "Bearer %s"
-
-  - name: "Paypal"
-    regex: "^[A-Za-z0-9_-]{80}$"
-    verify_url: "https://api.sandbox.paypal.com/v1/oauth2/token"
-    verify_method: "POST"
-    headers:
-      "Authorization": "Basic %s"
-
-  - name: "Picatic"
-    regex: "^sk_live_[0-9a-z]{32}$"
-    verify_url: "https://api.picatic.com/v2/events"
-    verify_method: "GET"
-    headers:
-      "Authorization": "Bearer %s"
-
-  - name: "Pendo"
-    regex: "^[a-f0-9]{40}$"
-    verify_url: "https://app.pendo.io/api/v1/metadata/schema/account"
-    verify_method: "GET"
-    headers:
-      "X-Pendo-Integration-Key": "%s"
-      "Content-Type": "application/json"
-
-  - name: "Razorpay"
-    regex: "^rzp_[a-zA-Z0-9]{14}$"
-    verify_url: "https://api.razorpay.com/v1/payments"
-    verify_method: "GET"
-    headers:
-      "Authorization": "Basic %s"
-
-  - name: "Salesforce"
-    regex: "^[0-9a-f]{32}$"
-    verify_url: "https://login.salesforce.com/services/oauth2/userinfo"
-    verify_method: "GET"
-    headers:
-      "Authorization": "Bearer %s"
-
-  - name: "Sendgrid"
-    regex: "^SG\\.[a-zA-Z0-9_-]{22}\\.[a-zA-Z0-9_-]{43}$"
-    verify_url: "https://api.sendgrid.com/v3/scopes"
-    verify_method: "GET"
-    headers:
-    "Authorization": "Bearer %s"
-
-  - name: "Salesforce"
-    regex: "^[0-9a-f]{32}$"
-    verify_url: "https://login.salesforce.com/services/oauth2/userinfo"
-    verify_method: "GET"
-    headers:
-      "Authorization": "Bearer %s"
-
-  - name: "Sendgrid"
-    regex: "^SG\\.[a-zA-Z0-9_-]{22}\\.[a-zA-Z0-9_-]{43}$"
-    verify_url: "https://api.sendgrid.com/v3/scopes"
-    verify_method: "GET"
-    headers:
-      "Authorization": "Bearer %s"
+    validation:
+      status_code: 200
+      content_type: "application/json"
+      success_indicator:
+        type: "json_key_not_empty"
+        key: "available"
 
   - name: "Slack"
     regex: "^xox[baprs]-[0-9]{11}-[0-9]{11}-[0-9]{12}-[a-zA-Z0-9]{32}$"
@@ -339,42 +32,37 @@ services:
     verify_method: "POST"
     headers:
       "Authorization": "Bearer %s"
+    validation:
+      status_code: 200
+      content_type: "application/json"
+      success_indicator:
+        type: "json_key_value"
+        key: "ok"
+        value: "true"
 
-  - name: "Spotify"
-    regex: "^[a-zA-Z0-9]{32}$"
-    verify_url: "https://api.spotify.com/v1/me"
-    verify_method: "GET"
+  - name: "AWS"
+    regex: "^AKIA[0-9A-Z]{16}$"
+    verify_url: "https://sts.amazonaws.com/?Action=GetCallerIdentity&Version=2011-06-15"
+    verify_method: "POST"
     headers:
-      "Authorization": "Bearer %s"
+      "Authorization": "AWS4-HMAC-SHA256 Credential=%s"
+    validation:
+      status_code: 200
+      content_type: "text/xml"
+      success_indicator:
+        type: "contains_string"
+        value: "<GetCallerIdentityResponse"
 
-  - name: "Square"
-    regex: "^sq0atp-[0-9A-Za-z\\-_]{22}$"
-    verify_url: "https://connect.squareup.com/v2/locations"
-    verify_method: "GET"
-    headers:
-      "Authorization": "Bearer %s"
-
-  - name: "Stripe"
-    regex: "^sk_live_[0-9a-zA-Z]{24}$"
-    verify_url: "https://api.stripe.com/v1/charges"
-    verify_method: "GET"
-    headers:
-      "Authorization": "Bearer %s"
-
-  - name: "Travis CI"
-    regex: "^[a-z0-9]{22}$"
-    verify_url: "https://api.travis-ci.org/repos"
-    verify_method: "GET"
-    headers:
-      "Travis-API-Version": "3"
-      "Authorization": "token %s"
-
-  - name: "Twilio"
-    regex: "^SK[0-9a-fA-F]{32}$"
-    verify_url: "https://api.twilio.com/2010-04-01/Accounts.json"
+  - name: "Mailgun"
+    regex: "^key-[0-9a-zA-Z]{32}$"
+    verify_url: "https://api.mailgun.net/v3/domains"
     verify_method: "GET"
     headers:
       "Authorization": "Basic %s"
+    validation:
+      status_code: 200
+      success_indicator:
+        type: "status_code_only"
 
   - name: "Twitter"
     regex: "^[1-9][0-9]*-[0-9a-zA-Z]{40}$"
@@ -382,76 +70,114 @@ services:
     verify_method: "GET"
     headers:
       "Authorization": "Bearer %s"
+    validation:
+      status_code: 200
+      content_type: "application/json"
+      success_indicator:
+        type: "json_key_exists"
+        key: "screen_name"
 
-  - name: "WakaTime"
-    regex: "^waka_[a-f0-9]{32}$"
-    verify_url: "https://wakatime.com/api/v1/users/current/projects"
+  - name: "Twilio"
+    regex: "^SK[0-9a-fA-F]{32}$"
+    verify_url: "https://api.twilio.com/2010-04-01/Accounts.json"
     verify_method: "GET"
     headers:
       "Authorization": "Basic %s"
+    validation:
+      status_code: 200
+      content_type: "application/json"
+      success_indicator:
+        type: "json_key_exists"
+        key: "accounts"
 
-  - name: "WordPress"
-    regex: ".*"
-    verify_url: "https://public-api.wordpress.com/rest/v1.1/me"
+  - name: "SendGrid"
+    regex: "^SG\\.[a-zA-Z0-9_-]+\\.[a-zA-Z0-9_-]+$"
+    verify_url: "https://api.sendgrid.com/v3/user/credits"
     verify_method: "GET"
     headers:
       "Authorization": "Bearer %s"
+    validation:
+      status_code: 200
+      content_type: "application/json"
+      success_indicator:
+        type: "json_key_exists"
+        key: "total"
 
-  - name: "YouTube"
-    regex: "^AIza[0-9A-Za-z-_]{35}$"
-    verify_url: "https://www.googleapis.com/youtube/v3/channels?part=snippet&mine=true"
+  - name: "MailChimp"
+    regex: "^[0-9a-f]{32}-us[0-9]{1,2}$"
+    verify_url: "https://us1.api.mailchimp.com/3.0/"
+    verify_method: "GET"
+    headers:
+      "Authorization": "apikey %s"
+    validation:
+      status_code: 200
+      content_type: "application/json"
+      success_indicator:
+        type: "json_key_exists"
+        key: "account_id"
+
+  - name: "Heroku"
+    regex: "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+    verify_url: "https://api.heroku.com/account"
     verify_method: "GET"
     headers:
       "Authorization": "Bearer %s"
+      "Accept": "application/vnd.heroku+json; version=3"
+    validation:
+      status_code: 200
+      content_type: "application/json"
+      success_indicator:
+        type: "json_key_exists"
+        key: "email"
 
-  - name: "Zendesk"
-    regex: "^[a-zA-Z0-9]{40}$"
-    verify_url: "https://your-domain.zendesk.com/api/v2/tickets.json"
+  - name: "DigitalOcean"
+    regex: "^[0-9a-fA-F]{64}$"
+    verify_url: "https://api.digitalocean.com/v2/account"
     verify_method: "GET"
     headers:
       "Authorization": "Bearer %s"
+    validation:
+      status_code: 200
+      content_type: "application/json"
+      success_indicator:
+        type: "json_key_exists"
+        key: "account"
 
-  - name: "Zoom"
-    regex: "^[a-zA-Z0-9_-]{36}$"
-    verify_url: "https://api.zoom.us/v2/users/me"
+  - name: "CircleCI"
+    regex: "^[0-9a-f]{40}$"
+    verify_url: "https://circleci.com/api/v2/me"
     verify_method: "GET"
     headers:
-      "Authorization": "Bearer %s"
+      "Circle-Token": "%s"
+    validation:
+      status_code: 200
+      content_type: "application/json"
+      success_indicator:
+        type: "json_key_exists"
+        key: "id"
 
-  - name: "Google reCAPTCHA"
-    regex: "^6[0-9a-zA-Z_-]{39}$"
-    verify_url: "https://www.google.com/recaptcha/api/siteverify"
+  - name: "Dropbox"
+    regex: "^[a-zA-Z0-9_-]{64}$"
+    verify_url: "https://api.dropboxapi.com/2/users/get_current_account"
     verify_method: "POST"
     headers:
-      "Content-Type": "application/x-www-form-urlencoded"
-      
-  - name: "Delighted"
-    regex: "^[a-zA-Z0-9]{32}$"
-    verify_url: "https://api.delighted.com/v1/metrics.json"
+      "Authorization": "Bearer %s"
+    validation:
+      status_code: 200
+      content_type: "application/json"
+      success_indicator:
+        type: "json_key_exists"
+        key: "account_id"
+
+  - name: "NPM"
+    regex: "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+    verify_url: "https://registry.npmjs.org/-/whoami"
     verify_method: "GET"
     headers:
-      "Authorization": "Basic %s"
-
-  - name: "Loqate"
-    regex: "^[A-Z0-9]{6}-[A-Z0-9]{5}-[A-Z0-9]{5}-[A-Z0-9]{5}$"
-    verify_url: "http://api.addressy.com/Capture/Interactive/Find/v1.00/json3.ws?Key=%s&Countries=US,CA&Language=en&Limit=5&Text=BHAR"
-    verify_method: "GET"
-
-  - name: "Infura"
-    regex: "^[a-f0-9]{32}$"
-    verify_url: "https://mainnet.infura.io/v3/%s"
-    verify_method: "POST"
-    headers:
-      "Content-Type": "application/json"
-
-  - name: "Deviant Art"
-    regex: "^[0-9a-f]{16}$"
-    verify_url: "https://www.deviantart.com/oauth2/token"
-    verify_method: "POST"
-    headers:
-      "Content-Type": "application/x-www-form-urlencoded"
-
-  - name: "Bing Maps"
-    regex: "^[A-Za-z0-9-_]{64}$"
-    verify_url: "https://dev.virtualearth.net/REST/v1/Locations?CountryRegion=US&adminDistrict=WA&locality=Somewhere&postalCode=98001&addressLine=100%20Main%20St.&key=%s"
-    verify_method: "GET"
+      "Authorization": "Bearer %s"
+    validation:
+      status_code: 200
+      content_type: "application/json"
+      success_indicator:
+        type: "json_key_exists"
+        key: "username"

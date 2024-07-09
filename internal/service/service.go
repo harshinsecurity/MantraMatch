@@ -1,12 +1,14 @@
 package service
 
 import (
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"regexp"
+	"strings"
 	"time"
 
 	"github.com/harshinsecurity/mantramatch/internal/config"
@@ -47,7 +49,7 @@ func VerifyKey(service config.Service, apiKey string, timeout int, verbose bool)
 		return false
 	}
 
-	return isValidResponse(service, resp.StatusCode, body, verbose)
+	return isValidResponse(service, resp, body, verbose)
 }
 
 // createRequest creates an http.Request for the given service and API key
@@ -58,32 +60,83 @@ func createRequest(service config.Service, apiKey string) (*http.Request, error)
 	}
 
 	for key, value := range service.Headers {
-		req.Header.Add(key, fmt.Sprintf(value, apiKey))
+		if strings.Contains(value, "%s") {
+			req.Header.Add(key, fmt.Sprintf(value, apiKey))
+		} else {
+			req.Header.Add(key, value)
+		}
+	}
+
+	// Special handling for Basic Auth
+	if authHeader := req.Header.Get("Authorization"); strings.HasPrefix(authHeader, "Basic") {
+		encodedAuth := base64.StdEncoding.EncodeToString([]byte(apiKey + ":"))
+		req.Header.Set("Authorization", "Basic "+encodedAuth)
 	}
 
 	return req, nil
 }
 
 // isValidResponse checks if the API response indicates a valid key
-func isValidResponse(service config.Service, statusCode int, body []byte, verbose bool) bool {
-	if statusCode != http.StatusOK {
-		logError(fmt.Sprintf("%s returned non-200 status code: %d", service.Name, statusCode), verbose)
+func isValidResponse(service config.Service, resp *http.Response, body []byte, verbose bool) bool {
+	if resp.StatusCode != service.Validation.StatusCode {
+		logError(fmt.Sprintf("%s returned unexpected status code: %d", service.Name, resp.StatusCode), verbose)
 		return false
 	}
 
+	if service.Validation.ContentType != "" && !strings.HasPrefix(resp.Header.Get("Content-Type"), service.Validation.ContentType) {
+		logError(fmt.Sprintf("%s returned unexpected content type: %s", service.Name, resp.Header.Get("Content-Type")), verbose)
+		return false
+	}
+
+	switch service.Validation.SuccessIndicator.Type {
+	case "status_code_only":
+		return true
+	case "json_key_exists", "json_key_value":
+		return validateJSONResponse(service, body, verbose)
+	case "contains_string":
+		return strings.Contains(string(body), service.Validation.SuccessIndicator.Value)
+	case "regex_match":
+		re, err := regexp.Compile(service.Validation.SuccessIndicator.Value)
+		if err != nil {
+			logError(fmt.Sprintf("Invalid regex for %s: %v", service.Name, err), verbose)
+			return false
+		}
+		return re.Match(body)
+	case "header_exists", "header_value":
+		return validateHeaderResponse(service, resp.Header, verbose)
+	default:
+		logError(fmt.Sprintf("Unknown validation type for %s: %s", service.Name, service.Validation.SuccessIndicator.Type), verbose)
+		return false
+	}
+}
+
+// validateJSONResponse validates JSON responses
+func validateJSONResponse(service config.Service, body []byte, verbose bool) bool {
 	var result map[string]interface{}
 	if err := json.Unmarshal(body, &result); err != nil {
 		logError(fmt.Sprintf("Error parsing JSON response from %s: %v", service.Name, err), verbose)
 		return false
 	}
 
-	if service.SuccessKey != "" {
-		_, hasSuccessKey := result[service.SuccessKey]
-		return hasSuccessKey
+	value, exists := result[service.Validation.SuccessIndicator.Key]
+	if !exists {
+		return false
 	}
 
-	_, hasError := result["error"]
-	return !hasError
+	if service.Validation.SuccessIndicator.Type == "json_key_value" {
+		return fmt.Sprintf("%v", value) == service.Validation.SuccessIndicator.Value
+	}
+
+	return true
+}
+
+// validateHeaderResponse validates header-based responses
+func validateHeaderResponse(service config.Service, headers http.Header, verbose bool) bool {
+	value := headers.Get(service.Validation.SuccessIndicator.Key)
+	if service.Validation.SuccessIndicator.Type == "header_exists" {
+		return value != ""
+	}
+	return value == service.Validation.SuccessIndicator.Value
 }
 
 // logError logs an error message if verbose mode is enabled

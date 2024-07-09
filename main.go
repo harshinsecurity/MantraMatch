@@ -2,7 +2,6 @@ package main
 
 import (
 	"bufio"
-	"embed"
 	"flag"
 	"fmt"
 	"os"
@@ -14,8 +13,13 @@ import (
 	"github.com/schollz/progressbar/v3"
 )
 
-//go:embed config.yaml
-var embeddedFiles embed.FS
+const logo = `
+ __  __             _             __  __       _       _     
+|  \/  | __ _ _ __ | |_ _ __ __ _|  \/  | __ _| |_ ___| |__  
+| |\/| |/ _` + "`" + ` | '_ \| __| '__/ _` + "`" + ` | |\/| |/ _` + "`" + ` | __/ __| '_ \ 
+| |  | | (_| | | | | |_| | | (_| | |  | | (_| | || (__| | | |
+|_|  |_|\__,_|_| |_|\__|_|  \__,_|_|  |_|\__,_|\__\___|_| |_|
+`
 
 var (
 	configFile string
@@ -25,16 +29,7 @@ var (
 	listFile   string
 )
 
-const logo = `
-    __  ___            __             __  ___      __       __  
-   /  |/  /___ _____  / /__________ _/  |/  /___ _/ /______/ /_ 
-  / /|_/ / __ `/ __ \/ __/ ___/ __ `/ /|_/ / __ `/ __/ ___/ __ \
- / /  / / /_/ / / / / /_/ /  / /_/ / /  / / /_/ / /_/ /__/ / / /
-/_/  /_/\__,_/_/ /_/\__/_/   \__,_/_/  /_/\__,_/\__/\___/_/ /_/ 
-`
-
 func init() {
-	flag.Usage = usage
 	homeDir, _ := os.UserHomeDir()
 	defaultConfigPath := filepath.Join(homeDir, ".config", "mantramatch", "config.yaml")
 	flag.StringVar(&configFile, "config", defaultConfigPath, "Path to configuration file")
@@ -42,11 +37,11 @@ func init() {
 	flag.BoolVar(&silent, "silent", false, "Show only verified API keys and services")
 	flag.IntVar(&timeout, "timeout", 10, "Timeout for HTTP requests in seconds")
 	flag.StringVar(&listFile, "list", "", "Path to file containing list of API keys")
-	flag.Parse()
+	flag.Usage = usage
 }
 
 func usage() {
-	fmt.Println(logo)
+	fmt.Fprintf(os.Stderr, "%s\n", logo)
 	fmt.Fprintf(os.Stderr, "MantraMatch: A tool to identify and verify API keys\n\n")
 	fmt.Fprintf(os.Stderr, "Usage: mantramatch [options] <api-key>\n\n")
 	fmt.Fprintf(os.Stderr, "Options:\n")
@@ -57,13 +52,10 @@ func usage() {
 }
 
 func main() {
+	flag.Parse()
+
 	if !silent {
 		fmt.Println(logo)
-	}
-
-	if err := ensureConfig(); err != nil {
-		fmt.Printf("Error ensuring config: %v\n", err)
-		os.Exit(1)
 	}
 
 	cfg, err := config.LoadConfig(configFile)
@@ -73,36 +65,13 @@ func main() {
 	}
 
 	if listFile != "" {
-		processKeyList(cfg, listFile)
+		processKeyList(cfg)
 	} else if len(flag.Args()) == 1 {
 		processKey(cfg, flag.Args()[0])
 	} else {
 		flag.Usage()
 		os.Exit(1)
 	}
-}
-
-func ensureConfig() error {
-	if _, err := os.Stat(configFile); os.IsNotExist(err) {
-		dir := filepath.Dir(configFile)
-		if err := os.MkdirAll(dir, 0755); err != nil {
-			return fmt.Errorf("failed to create config directory: %w", err)
-		}
-
-		embeddedConfig, err := embeddedFiles.ReadFile("config.yaml")
-		if err != nil {
-			return fmt.Errorf("failed to read embedded config: %w", err)
-		}
-
-		if err := os.WriteFile(configFile, embeddedConfig, 0644); err != nil {
-			return fmt.Errorf("failed to write config file: %w", err)
-		}
-
-		if !silent {
-			fmt.Printf("Config file created at: %s\n", configFile)
-		}
-	}
-	return nil
 }
 
 func processKey(cfg *config.Config, apiKey string) {
@@ -122,8 +91,8 @@ func processKey(cfg *config.Config, apiKey string) {
 	printResults(results, apiKey)
 }
 
-func processKeyList(cfg *config.Config, filename string) {
-	file, err := os.Open(filename)
+func processKeyList(cfg *config.Config) {
+	file, err := os.Open(listFile)
 	if err != nil {
 		fmt.Printf("Error opening file: %v\n", err)
 		os.Exit(1)

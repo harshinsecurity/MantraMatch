@@ -8,17 +8,31 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-// Service represents an API service with its verification details
+// SuccessIndicator defines the criteria for a successful API key validation
+type SuccessIndicator struct {
+	Type  string `yaml:"type"`
+	Key   string `yaml:"key,omitempty"`
+	Value string `yaml:"value,omitempty"`
+}
+
+// Validation defines the validation rules for an API service
+type Validation struct {
+	StatusCode       int              `yaml:"status_code"`
+	ContentType      string           `yaml:"content_type,omitempty"`
+	SuccessIndicator SuccessIndicator `yaml:"success_indicator"`
+}
+
+// Service represents an API service configuration
 type Service struct {
 	Name         string            `yaml:"name"`
 	Regex        string            `yaml:"regex"`
 	VerifyURL    string            `yaml:"verify_url"`
 	VerifyMethod string            `yaml:"verify_method"`
 	Headers      map[string]string `yaml:"headers"`
-	SuccessKey   string            `yaml:"success_key"`
+	Validation   Validation        `yaml:"validation"`
 }
 
-// Config holds the configuration for the tool
+// Config holds the entire configuration for MantraMatch
 type Config struct {
 	Services []Service `yaml:"services"`
 }
@@ -62,17 +76,61 @@ func validateConfig(config *Config) error {
 	}
 
 	for _, service := range config.Services {
-		if service.Name == "" {
-			return fmt.Errorf("service name cannot be empty")
+		if err := validateService(service); err != nil {
+			return fmt.Errorf("invalid service '%s': %w", service.Name, err)
 		}
-		if service.Regex == "" {
-			return fmt.Errorf("regex for service '%s' cannot be empty", service.Name)
+	}
+
+	return nil
+}
+
+// validateService checks if a single service configuration is valid
+func validateService(service Service) error {
+	if service.Name == "" {
+		return fmt.Errorf("service name cannot be empty")
+	}
+	if service.Regex == "" {
+		return fmt.Errorf("regex cannot be empty")
+	}
+	if service.VerifyURL == "" {
+		return fmt.Errorf("verify URL cannot be empty")
+	}
+	if service.VerifyMethod == "" {
+		return fmt.Errorf("verify method cannot be empty")
+	}
+	if service.Validation.StatusCode == 0 {
+		return fmt.Errorf("status code cannot be 0")
+	}
+	if err := validateSuccessIndicator(service.Validation.SuccessIndicator); err != nil {
+		return fmt.Errorf("invalid success indicator: %w", err)
+	}
+	return nil
+}
+
+// validateSuccessIndicator checks if the success indicator is valid
+func validateSuccessIndicator(indicator SuccessIndicator) error {
+	validTypes := map[string]bool{
+		"status_code_only": true,
+		"json_key_exists":  true,
+		"json_key_value":   true,
+		"contains_string":  true,
+		"regex_match":      true,
+		"header_exists":    true,
+		"header_value":     true,
+	}
+
+	if !validTypes[indicator.Type] {
+		return fmt.Errorf("invalid success indicator type: %s", indicator.Type)
+	}
+
+	switch indicator.Type {
+	case "json_key_exists", "json_key_value", "header_exists", "header_value":
+		if indicator.Key == "" {
+			return fmt.Errorf("key is required for type %s", indicator.Type)
 		}
-		if service.VerifyURL == "" {
-			return fmt.Errorf("verify URL for service '%s' cannot be empty", service.Name)
-		}
-		if service.VerifyMethod == "" {
-			return fmt.Errorf("verify method for service '%s' cannot be empty", service.Name)
+	case "json_key_value", "contains_string", "regex_match", "header_value":
+		if indicator.Value == "" {
+			return fmt.Errorf("value is required for type %s", indicator.Type)
 		}
 	}
 
