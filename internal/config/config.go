@@ -28,7 +28,7 @@ type Service struct {
 	Regex        string            `yaml:"regex"`
 	VerifyURL    string            `yaml:"verify_url"`
 	VerifyMethod string            `yaml:"verify_method"`
-	Headers      map[string]string `yaml:"headers"`
+	Headers      map[string]string `yaml:"headers,omitempty"`
 	Validation   Validation        `yaml:"validation"`
 }
 

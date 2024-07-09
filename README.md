@@ -13,6 +13,7 @@ MantraMatch is an open-source tool designed to identify and verify API keys acro
 - [Contributing](#contributing)
   - [Adding New Services](#adding-new-services)
 - [Areas for Improvement](#areas-for-improvement)
+- [Reporting Issues](#reporting-issues)
 
 ## Installation
 
@@ -58,15 +59,27 @@ Each service in the configuration file should include:
   regex: "^regex_pattern_here$"
   verify_url: "https://api.example.com/verify"
   verify_method: "GET"
-  headers:
+  headers:  # Optional
     "Authorization": "Bearer %s"
   validation:
     status_code: 200
-    content_type: "application/json"
+    content_type: "application/json"  # Optional
     success_indicator:
       type: "json_key_exists"
       key: "user_id"
+
+# Example of a service without headers
+- name: "Simple API"
+  regex: "^[A-Za-z0-9]{32}$"
+  verify_url: "https://api.example.com/verify?key=%s"
+  verify_method: "GET"
+  validation:
+    status_code: 200
+    success_indicator:
+      type: "status_code_only"
 ```
+
+Note: The `headers` field is optional. For services that don't require headers, you can omit this field. In such cases, you might need to include the API key in the `verify_url` (as shown in the "Simple API" example).
 
 ### Validation Types
 
