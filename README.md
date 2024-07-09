@@ -9,6 +9,7 @@ MantraMatch is an open-source tool designed to identify and verify API keys acro
 - [How It Works](#how-it-works)
 - [Configuration](#configuration)
 - [Areas for Improvement](#areas-for-improvement)
+- [Reporting Issues](#reporting-issues)
 
 ## Installation
 
@@ -20,22 +21,7 @@ go install github.com/harshinsecurity/mantramatch@latest
 
 This command will download the source code, compile it, and install the `mantramatch` binary in your `$GOPATH/bin` directory. Make sure this directory is in your system's PATH.
 
-After installation, you need to set up the configuration file:
-
-1. Create a directory for the configuration:
-   ```
-   mkdir -p ~/.config/mantramatch
-   ```
-
-2. Download the default configuration file:
-   ```
-   curl -o ~/.config/mantramatch/config.yaml https://raw.githubusercontent.com/harshinsecurity/mantramatch/main/configs/config.yaml
-   ```
-
-   Or, if you prefer to use `wget`:
-   ```
-   wget -O ~/.config/mantramatch/config.yaml https://raw.githubusercontent.com/harshinsecurity/mantramatch/main/configs/config.yaml
-   ```
+The configuration file will be automatically created the first time you run the tool.
 
 ## Usage
 
@@ -48,11 +34,14 @@ mantramatch [options] <api-key>
 Options:
 - `-config`: Path to the configuration file (default: ~/.config/mantramatch/config.yaml)
 - `-verbose`: Enable verbose output
+- `-silent`: Show only verified API keys and services
 - `-timeout`: Timeout for HTTP requests in seconds (default: 10)
+- `-list`: Path to file containing list of API keys
 
-Example:
+Examples:
 ```
 mantramatch -verbose -timeout=15 your_api_key_here
+mantramatch -silent -list=keys.txt
 ```
 
 ## How It Works
@@ -61,6 +50,8 @@ mantramatch -verbose -timeout=15 your_api_key_here
 2. It matches the input API key against these patterns to identify potential services.
 3. For each matched service, it attempts to verify the API key by making a request to the service's verification endpoint.
 4. The tool reports which services (if any) the API key is valid for.
+
+When processing a list of API keys (`-list` option), MantraMatch uses concurrent processing with a progress bar to efficiently handle multiple keys.
 
 ## Configuration
 
@@ -87,12 +78,10 @@ Example configuration entry:
 
 1. **More Services**: Add support for additional API services.
 2. **Better Error Handling**: Improve error messages and handling for different types of failures.
-3. **Concurrent Verification**: Implement concurrent verification for faster results with multiple services.
-4. **GUI**: Develop a graphical user interface for easier use.
-5. **API Integration**: Create an API that other tools can integrate with.
-6. **Periodic Updates**: Implement a system to periodically update the regex patterns and verification endpoints.
+3. **GUI**: Develop a graphical user interface for easier use.
+4. **API Integration**: Create an API that other tools can integrate with.
+5. **Periodic Updates**: Implement a system to periodically update the regex patterns and verification endpoints.
 
-
-### Reporting Issues
+## Reporting Issues
 
 If you find a bug or have a suggestion for improvement, please open an issue on the GitHub repository. Provide as much detail as possible, including steps to reproduce any bugs.
