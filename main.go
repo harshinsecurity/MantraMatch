@@ -13,14 +13,6 @@ import (
 	"github.com/schollz/progressbar/v3"
 )
 
-const logo = `
- __  __             _             __  __       _       _     
-|  \/  | __ _ _ __ | |_ _ __ __ _|  \/  | __ _| |_ ___| |__  
-| |\/| |/ _` + "`" + ` | '_ \| __| '__/ _` + "`" + ` | |\/| |/ _` + "`" + ` | __/ __| '_ \ 
-| |  | | (_| | | | | |_| | | (_| | |  | | (_| | || (__| | | |
-|_|  |_|\__,_|_| |_|\__|_|  \__,_|_|  |_|\__,_|\__\___|_| |_|
-`
-
 var (
 	configFile string
 	verbose    bool
@@ -41,7 +33,6 @@ func init() {
 }
 
 func usage() {
-	fmt.Fprintf(os.Stderr, "%s\n", logo)
 	fmt.Fprintf(os.Stderr, "MantraMatch: A tool to identify and verify API keys\n\n")
 	fmt.Fprintf(os.Stderr, "Usage: mantramatch [options] <api-key>\n\n")
 	fmt.Fprintf(os.Stderr, "Options:\n")
@@ -53,10 +44,6 @@ func usage() {
 
 func main() {
 	flag.Parse()
-
-	if !silent {
-		fmt.Println(logo)
-	}
 
 	cfg, err := config.LoadConfig(configFile)
 	if err != nil {
