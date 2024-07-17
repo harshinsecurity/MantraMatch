@@ -1,46 +1,55 @@
-# These are the sample yaml file.
 services:
-  - name: "GitHub"
-    regex: "^gh[pousr]_[A-Za-z0-9_]{36}$"
-    verify_url: "https://api.github.com/user"
+  - name: "ABTasty API Key"
+    regex: "^[a-zA-Z0-9]{32}$"
+    verify_url: "https://api.abtasty.com/api/v1/accounts"
     verify_method: "GET"
     headers:
-      "Authorization": "token %s"
+      "x-api-key": "%s"
     validation:
       status_code: 200
-      content_type: "application/json"
       success_indicator:
         type: "json_key_exists"
-        key: "login"
+        key: "items"
+    note: "This is the note"
 
-  - name: "Stripe"
-    regex: "^sk_live_[0-9a-zA-Z]{24}$"
-    verify_url: "https://api.stripe.com/v1/balance"
+  - name: "Algolia API Key"
+    regex: "^[a-zA-Z0-9]{32}$"
+    verify_url: "https://www.algolia.com/api/1/keys/%s"
+    verify_method: "GET"
+    headers:
+      "X-Algolia-API-Key": "%s"
+      "X-Algolia-Application-Id": "placeholder"
+    validation:
+      status_code: 200
+      success_indicator:
+        type: "json_key_exists"
+        key: "acl"
+
+  - name: "Amplitude API Key"
+    regex: "^[a-f0-9]{32}$"
+    verify_url: "https://api2.amplitude.com/2/applications"
+    verify_method: "GET"
+    headers:
+      "Authorization": "Api-Key %s"
+    validation:
+      status_code: 200
+      success_indicator:
+        type: "json_key_exists"
+        key: "data"
+
+  - name: "Asana Access Token"
+    regex: "^[0-9]{16}:[0-9a-f]{32}$"
+    verify_url: "https://app.asana.com/api/1.0/users/me"
     verify_method: "GET"
     headers:
       "Authorization": "Bearer %s"
     validation:
       status_code: 200
-      content_type: "application/json"
       success_indicator:
-        type: "json_key_not_empty"
-        key: "available"
+        type: "json_key_exists"
+        key: "data"
 
-  - name: "Slack"
-    regex: "^xox[baprs]-[0-9]{11}-[0-9]{11}-[0-9]{12}-[a-zA-Z0-9]{32}$"
-    verify_url: "https://slack.com/api/auth.test"
-    verify_method: "POST"
-    headers:
-      "Authorization": "Bearer %s"
-    validation:
-      status_code: 200
-      content_type: "application/json"
-      success_indicator:
-        type: "json_key_value"
-        key: "ok"
-        value: "true"
-
-  - name: "AWS"
+  - name: "AWS Access Key ID and Secret"
     regex: "^AKIA[0-9A-Z]{16}$"
     verify_url: "https://sts.amazonaws.com/?Action=GetCallerIdentity&Version=2011-06-15"
     verify_method: "POST"
@@ -48,75 +57,394 @@ services:
       "Authorization": "AWS4-HMAC-SHA256 Credential=%s"
     validation:
       status_code: 200
-      content_type: "text/xml"
       success_indicator:
         type: "contains_string"
         value: "<GetCallerIdentityResponse"
 
-  - name: "Mailgun"
-    regex: "^key-[0-9a-zA-Z]{32}$"
-    verify_url: "https://api.mailgun.net/v3/domains"
+  - name: "Azure Application Insights APP ID and API Key"
+    regex: "^[a-f0-9]{32}$"
+    verify_url: "https://api.applicationinsights.io/v1/apps/%s/metrics/requests/count"
+    verify_method: "GET"
+    headers:
+      "x-api-key": "%s"
+    validation:
+      status_code: 200
+      success_indicator:
+        type: "json_key_exists"
+        key: "value"
+
+  - name: "Bazaarvoice Passkey"
+    regex: "^[a-zA-Z0-9]{64}$"
+    verify_url: "https://api.bazaarvoice.com/data/products.json?apiversion=5.4&passkey=%s"
+    verify_method: "GET"
+    validation:
+      status_code: 200
+      success_indicator:
+        type: "json_key_exists"
+        key: "Results"
+
+  - name: "Bing Maps API Key"
+    regex: "^[A-Za-z0-9-_]{64}$"
+    verify_url: "https://dev.virtualearth.net/REST/v1/Locations?q=London&key=%s"
+    verify_method: "GET"
+    validation:
+      status_code: 200
+      success_indicator:
+        type: "json_key_value"
+        key: "statusCode"
+        value: "200"
+
+  - name: "Bit.ly Access Token"
+    regex: "^[0-9a-zA-Z_]{35}$"
+    verify_url: "https://api-ssl.bitly.com/v4/user"
+    verify_method: "GET"
+    headers:
+      "Authorization": "Bearer %s"
+    validation:
+      status_code: 200
+      success_indicator:
+        type: "json_key_exists"
+        key: "login"
+
+  - name: "Branch.io Key and Secret"
+    regex: "^key_live_[a-zA-Z0-9]{32}$"
+    verify_url: "https://api2.branch.io/v1/app/%s"
+    verify_method: "GET"
+    validation:
+      status_code: 200
+      success_indicator:
+        type: "json_key_exists"
+        key: "id"
+
+  - name: "BrowserStack Access Key"
+    regex: "^[a-zA-Z0-9]{31}$"
+    verify_url: "https://api.browserstack.com/automate/plan.json"
     verify_method: "GET"
     headers:
       "Authorization": "Basic %s"
     validation:
       status_code: 200
       success_indicator:
-        type: "status_code_only"
+        type: "json_key_exists"
+        key: "automate_plan"
 
-  - name: "Twitter"
-    regex: "^[1-9][0-9]*-[0-9a-zA-Z]{40}$"
-    verify_url: "https://api.twitter.com/1.1/account/verify_credentials.json"
+  - name: "Buildkite Access Token"
+    regex: "^[a-f0-9]{40}$"
+    verify_url: "https://api.buildkite.com/v2/user"
     verify_method: "GET"
     headers:
       "Authorization": "Bearer %s"
     validation:
       status_code: 200
-      content_type: "application/json"
       success_indicator:
         type: "json_key_exists"
-        key: "screen_name"
+        key: "id"
 
-  - name: "Twilio"
-    regex: "^SK[0-9a-fA-F]{32}$"
-    verify_url: "https://api.twilio.com/2010-04-01/Accounts.json"
+  - name: "ButterCMS API Key"
+    regex: "^[a-f0-9]{40}$"
+    verify_url: "https://api.buttercms.com/v2/posts/?auth_token=%s"
+    verify_method: "GET"
+    validation:
+      status_code: 200
+      success_indicator:
+        type: "json_key_exists"
+        key: "data"
+
+  - name: "Calendly API Key"
+    regex: "^[a-zA-Z0-9_-]{43}$"
+    verify_url: "https://api.calendly.com/users/me"
+    verify_method: "GET"
+    headers:
+      "Authorization": "Bearer %s"
+    validation:
+      status_code: 200
+      success_indicator:
+        type: "json_key_exists"
+        key: "resource"
+
+  - name: "Contentful Access Token"
+    regex: "^[a-f0-9]{64}$"
+    verify_url: "https://api.contentful.com/spaces"
+    verify_method: "GET"
+    headers:
+      "Authorization": "Bearer %s"
+    validation:
+      status_code: 200
+      success_indicator:
+        type: "json_key_exists"
+        key: "items"
+
+  - name: "CircleCI Access Token"
+    regex: "^[a-f0-9]{40}$"
+    verify_url: "https://circleci.com/api/v2/me"
+    verify_method: "GET"
+    headers:
+      "Circle-Token": "%s"
+    validation:
+      status_code: 200
+      success_indicator:
+        type: "json_key_exists"
+        key: "id"
+
+  - name: "Cloudflare API Key"
+    regex: "^[a-zA-Z0-9_-]{37}$"
+    verify_url: "https://api.cloudflare.com/client/v4/user/tokens/verify"
+    verify_method: "GET"
+    headers:
+      "Authorization": "Bearer %s"
+    validation:
+      status_code: 200
+      success_indicator:
+        type: "json_key_value"
+        key: "success"
+        value: "true"
+
+  - name: "Cypress Record Key"
+    regex: "^[a-f0-9-]{36}$"
+    verify_url: "https://api.cypress.io/projects"
+    verify_method: "GET"
+    headers:
+      "Authorization": "%s"
+    validation:
+      status_code: 200
+      success_indicator:
+        type: "json_key_exists"
+        key: "data"
+
+  - name: "DataDog API Key"
+    regex: "^[a-f0-9]{32}$"
+    verify_url: "https://api.datadoghq.com/api/v1/validate"
+    verify_method: "GET"
+    headers:
+      "DD-API-KEY": "%s"
+    validation:
+      status_code: 200
+      success_indicator:
+        type: "json_key_value"
+        key: "valid"
+        value: "true"
+
+  - name: "Delighted API Key"
+    regex: "^[a-zA-Z0-9]{32}$"
+    verify_url: "https://api.delighted.com/v1/people.json"
     verify_method: "GET"
     headers:
       "Authorization": "Basic %s"
     validation:
       status_code: 200
-      content_type: "application/json"
       success_indicator:
         type: "json_key_exists"
-        key: "accounts"
+        key: "data"
 
-  - name: "SendGrid"
-    regex: "^SG\\.[a-zA-Z0-9_-]+\\.[a-zA-Z0-9_-]+$"
-    verify_url: "https://api.sendgrid.com/v3/user/credits"
+  - name: "Deviant Art Access Token"
+    regex: "^[a-zA-Z0-9]{32}$"
+    verify_url: "https://www.deviantart.com/api/v1/oauth2/user/whoami"
     verify_method: "GET"
     headers:
       "Authorization": "Bearer %s"
     validation:
       status_code: 200
-      content_type: "application/json"
       success_indicator:
         type: "json_key_exists"
-        key: "total"
+        key: "username"
 
-  - name: "MailChimp"
-    regex: "^[0-9a-f]{32}-us[0-9]{1,2}$"
-    verify_url: "https://us1.api.mailchimp.com/3.0/"
-    verify_method: "GET"
+  - name: "Deviant Art Secret"
+    regex: "^[a-zA-Z0-9]{32}$"
+    verify_url: "https://www.deviantart.com/oauth2/token"
+    verify_method: "POST"
     headers:
-      "Authorization": "apikey %s"
+      "Content-Type": "application/x-www-form-urlencoded"
     validation:
       status_code: 200
-      content_type: "application/json"
+      success_indicator:
+        type: "json_key_exists"
+        key: "access_token"
+
+  - name: "Dropbox API"
+    regex: "^[a-zA-Z0-9_-]{64}$"
+    verify_url: "https://api.dropboxapi.com/2/users/get_current_account"
+    verify_method: "POST"
+    headers:
+      "Authorization": "Bearer %s"
+    validation:
+      status_code: 200
       success_indicator:
         type: "json_key_exists"
         key: "account_id"
 
-  - name: "Heroku"
+  - name: "Facebook Access Token"
+    regex: "^EAA[a-zA-Z0-9]{60,}$"
+    verify_url: "https://graph.facebook.com/me?access_token=%s"
+    verify_method: "GET"
+    validation:
+      status_code: 200
+      success_indicator:
+        type: "json_key_exists"
+        key: "id"
+
+  - name: "Facebook AppSecret"
+    regex: "^[a-f0-9]{32}$"
+    verify_url: "https://graph.facebook.com/oauth/access_token?client_id=ID_HERE&client_secret=%s&grant_type=client_credentials"
+    verify_method: "GET"
+    validation:
+      status_code: 200
+      success_indicator:
+        type: "json_key_exists"
+        key: "access_token"
+
+  - name: "Firebase"
+    regex: "^[0-9a-zA-Z_-]{39}$"
+    verify_url: "https://firebase.googleapis.com/v1beta1/projects"
+    verify_method: "GET"
+    headers:
+      "Authorization": "Bearer %s"
+    validation:
+      status_code: 200
+      success_indicator:
+        type: "json_key_exists"
+        key: "projects"
+
+  - name: "Firebase Cloud Messaging (FCM)"
+    regex: "^AAAA[a-zA-Z0-9_-]{7}:[a-zA-Z0-9_-]{140}$"
+    verify_url: "https://fcm.googleapis.com/fcm/send"
+    verify_method: "POST"
+    headers:
+      "Authorization": "key=%s"
+      "Content-Type": "application/json"
+    validation:
+      status_code: 200
+      success_indicator:
+        type: "json_key_exists"
+        key: "message_id"
+
+  - name: "FreshDesk API Key"
+    regex: "^[a-zA-Z0-9]{40}$"
+    verify_url: "https://<domain>.freshdesk.com/api/v2/tickets"
+    verify_method: "GET"
+    headers:
+      "Authorization": "Basic %s"
+    validation:
+      status_code: 200
+      success_indicator:
+        type: "json_key_exists"
+        key: "results"
+# Github
+  - name: "GitHub Token"
+    regex: "^gh[pousr]_[A-Za-z0-9_]{36}$"
+    verify_url: "https://api.github.com/user"
+    verify_method: "GET"
+    headers:
+      "Authorization": "token %s"
+    validation:
+      status_code: 200
+      success_indicator:
+        type: "json_key_exists"
+        key: "login"
+
+  - name: "GitHub Client ID and Secret"
+    regex: "^[0-9a-f]{20}_[0-9a-f]{40}$"
+    verify_url: "https://api.github.com/app"
+    verify_method: "GET"
+    headers:
+      "Authorization": "Basic %s"
+    validation:
+      status_code: 200
+      success_indicator:
+        type: "json_key_exists"
+        key: "id"
+
+  - name: "GitHub Private SSH Key" # For this we're checking for the presence of the key's header. Actual verification would require attempting an SSH connection, which is beyond the scope of a simple HTTP request.
+    regex: "^-----BEGIN (RSA|OPENSSH) PRIVATE KEY-----"
+    verify_url: "https://api.github.com/meta"
+    verify_method: "GET"
+    validation:
+      status_code: 200
+      success_indicator:
+        type: "json_key_exists"
+        key: "ssh_key_fingerprints"
+
+  - name: "GitLab Personal Access Token"
+    regex: "^glpat-[a-zA-Z0-9_-]{20}$"
+    verify_url: "https://gitlab.com/api/v4/user"
+    verify_method: "GET"
+    headers:
+      "PRIVATE-TOKEN": "%s"
+    validation:
+      status_code: 200
+      success_indicator:
+        type: "json_key_exists"
+        key: "id"
+
+  - name: "GitLab Runner Registration Token"
+    regex: "^GR1348941[a-zA-Z0-9_-]{20}$"
+    verify_url: "https://gitlab.com/api/v4/runners"
+    verify_method: "POST"
+    headers:
+      "Content-Type": "application/json"
+    validation:
+      status_code: 201
+      success_indicator:
+        type: "json_key_exists"
+        key: "id"
+
+  - name: "Google Cloud Service Account Credentials"
+    regex: "^{\"type\":\"service_account\""
+    verify_url: "https://www.googleapis.com/oauth2/v4/token"
+    verify_method: "POST"
+    headers:
+      "Content-Type": "application/json"
+    validation:
+      status_code: 200
+      success_indicator:
+        type: "json_key_exists"
+        key: "access_token"
+
+  - name: "Google Maps API Key"
+    regex: "^AIza[0-9A-Za-z-_]{35}$"
+    verify_url: "https://maps.googleapis.com/maps/api/staticmap?center=45%2C10&zoom=7&size=400x400&key=%s"
+    verify_method: "GET"
+    validation:
+      status_code: 200
+      success_indicator:
+        type: "header_value"
+        key: "Content-Type"
+        value: "image/png"
+
+  - name: "Google reCAPTCHA Key"
+    regex: "^6[0-9a-zA-Z_-]{39}$"
+    verify_url: "https://www.google.com/recaptcha/api/siteverify"
+    verify_method: "POST"
+    validation:
+      status_code: 200
+      success_indicator:
+        type: "json_key_exists"
+        key: "success"
+
+  - name: "Grafana Access Token"
+    regex: "^eyJrIjoi[A-Za-z0-9-_=]{100,}$"
+    verify_url: "https://<your-grafana-instance>/api/org"
+    verify_method: "GET"
+    headers:
+      "Authorization": "Bearer %s"
+    validation:
+      status_code: 200
+      success_indicator:
+        type: "json_key_exists"
+        key: "id"
+
+  - name: "Help Scout OAUTH"
+    regex: "^[a-f0-9]{40}$"
+    verify_url: "https://api.helpscout.net/v2/users/me"
+    verify_method: "GET"
+    headers:
+      "Authorization": "Bearer %s"
+    validation:
+      status_code: 200
+      success_indicator:
+        type: "json_key_exists"
+        key: "id"
+
+  - name: "Heroku API Key"
     regex: "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
     verify_url: "https://api.heroku.com/account"
     verify_method: "GET"
@@ -125,59 +453,587 @@ services:
       "Accept": "application/vnd.heroku+json; version=3"
     validation:
       status_code: 200
-      content_type: "application/json"
-      success_indicator:
-        type: "json_key_exists"
-        key: "email"
-
-  - name: "DigitalOcean"
-    regex: "^[0-9a-fA-F]{64}$"
-    verify_url: "https://api.digitalocean.com/v2/account"
-    verify_method: "GET"
-    headers:
-      "Authorization": "Bearer %s"
-    validation:
-      status_code: 200
-      content_type: "application/json"
-      success_indicator:
-        type: "json_key_exists"
-        key: "account"
-
-  - name: "CircleCI"
-    regex: "^[0-9a-f]{40}$"
-    verify_url: "https://circleci.com/api/v2/me"
-    verify_method: "GET"
-    headers:
-      "Circle-Token": "%s"
-    validation:
-      status_code: 200
-      content_type: "application/json"
       success_indicator:
         type: "json_key_exists"
         key: "id"
 
-  - name: "Dropbox"
-    regex: "^[a-zA-Z0-9_-]{64}$"
-    verify_url: "https://api.dropboxapi.com/2/users/get_current_account"
+  - name: "HubSpot API Key"
+    regex: "^[a-f0-9]{32}$"
+    verify_url: "https://api.hubapi.com/oauth/v1/access-tokens/%s"
+    verify_method: "GET"
+    validation:
+      status_code: 200
+      success_indicator:
+        type: "json_key_exists"
+        key: "hub_domain"
+
+  - name: "Infura API Key"
+    regex: "^[a-f0-9]{32}$"
+    verify_url: "https://mainnet.infura.io/v3/%s"
     verify_method: "POST"
+    headers:
+      "Content-Type": "application/json"
+    validation:
+      status_code: 200
+      success_indicator:
+        type: "json_key_exists"
+        key: "jsonrpc"
+
+  - name: "Instagram Access Token"
+    regex: "^IGQ[a-zA-Z0-9_-]{177}$"
+    verify_url: "https://graph.instagram.com/me?fields=id,username&access_token=%s"
+    verify_method: "GET"
+    validation:
+      status_code: 200
+      success_indicator:
+        type: "json_key_exists"
+        key: "id"
+
+  - name: "Instagram Basic Display API"
+    regex: "^IGQ[a-zA-Z0-9_-]{177}$"
+    verify_url: "https://graph.instagram.com/me?fields=id,username&access_token=%s"
+    verify_method: "GET"
+    validation:
+      status_code: 200
+      success_indicator:
+        type: "json_key_exists"
+        key: "id"
+
+  - name: "Instagram Graph API"
+    regex: "^EAA[a-zA-Z0-9]{60,}$"
+    verify_url: "https://graph.facebook.com/v12.0/me/accounts?access_token=%s"
+    verify_method: "GET"
+    validation:
+      status_code: 200
+      success_indicator:
+        type: "json_key_exists"
+        key: "data"
+
+  - name: "Ipstack API Key"
+    regex: "^[a-f0-9]{32}$"
+    verify_url: "http://api.ipstack.com/check?access_key=%s"
+    verify_method: "GET"
+    validation:
+      status_code: 200
+      success_indicator:
+        type: "json_key_exists"
+        key: "ip"
+
+  - name: "Iterable API Key"
+    regex: "^[a-f0-9]{32}$"
+    verify_url: "https://api.iterable.com/api/users"
+    verify_method: "GET"
+    headers:
+      "Api-Key": "%s"
+    validation:
+      status_code: 200
+      success_indicator:
+        type: "json_key_exists"
+        key: "params"
+
+  - name: "JumpCloud API Key"
+    regex: "^[a-f0-9]{40}$"
+    verify_url: "https://console.jumpcloud.com/api/v2/systemusers"
+    verify_method: "GET"
+    headers:
+      "x-api-key": "%s"
+    validation:
+      status_code: 200
+      success_indicator:
+        type: "json_key_exists"
+        key: "results"
+
+  - name: "Keen.io API Key"
+    regex: "^[A-Z0-9]{24}$"
+    verify_url: "https://api.keen.io/3.0/projects/%s"
+    verify_method: "GET"
+    headers:
+      "Authorization": "%s"
+    validation:
+      status_code: 200
+      success_indicator:
+        type: "json_key_exists"
+        key: "name"
+
+  - name: "LinkedIn OAUTH"
+    regex: "^[A-Za-z0-9-_]{16}$"
+    verify_url: "https://api.linkedin.com/v2/me"
+    verify_method: "GET"
     headers:
       "Authorization": "Bearer %s"
     validation:
       status_code: 200
-      content_type: "application/json"
+      success_indicator:
+        type: "json_key_exists"
+        key: "id"
+
+  - name: "Lokalise API Key"
+    regex: "^[a-f0-9]{32}$"
+    verify_url: "https://api.lokalise.com/api2/projects"
+    verify_method: "GET"
+    headers:
+      "x-api-token": "%s"
+    validation:
+      status_code: 200
+      success_indicator:
+        type: "json_key_exists"
+        key: "projects"
+
+  - name: "Loqate API Key"
+    regex: "^[A-Z0-9]{6}-[A-Z0-9]{5}-[A-Z0-9]{5}-[A-Z0-9]{5}$"
+    verify_url: "https://api.addressy.com/Capture/Interactive/Find/v1.00/json3.ws?Key=%s&Countries=US&Language=en"
+    verify_method: "GET"
+    validation:
+      status_code: 200
+      success_indicator:
+        type: "json_key_exists"
+        key: "Items"
+
+  - name: "MailChimp API Key"
+    regex: "^[0-9a-f]{32}-us[0-9]{1,2}$"
+    verify_url: "https://us1.api.mailchimp.com/3.0/"
+    verify_method: "GET"
+    headers:
+      "Authorization": "apikey %s"
+    validation:
+      status_code: 200
       success_indicator:
         type: "json_key_exists"
         key: "account_id"
 
-  - name: "NPM"
-    regex: "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+  - name: "MailGun Private Key"
+    regex: "^key-[0-9a-f]{32}$"
+    verify_url: "https://api.mailgun.net/v3/domains"
+    verify_method: "GET"
+    headers:
+      "Authorization": "Basic %s"
+    validation:
+      status_code: 200
+      success_indicator:
+        type: "json_key_exists"
+        key: "items"
+
+  - name: "Mapbox API Key"
+    regex: "^pk\\.[a-zA-Z0-9]{60,}$"
+    verify_url: "https://api.mapbox.com/geocoding/v5/mapbox.places/Los%20Angeles.json?access_token=%s"
+    verify_method: "GET"
+    validation:
+      status_code: 200
+      success_indicator:
+        type: "json_key_exists"
+        key: "features"
+
+  - name: "Microsoft Azure Tenant"
+    regex: "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+    verify_url: "https://management.azure.com/tenants?api-version=2020-01-01"
+    verify_method: "GET"
+    headers:
+      "Authorization": "Bearer %s"
+    validation:
+      status_code: 200
+      success_indicator:
+        type: "json_key_exists"
+        key: "value"
+
+  - name: "Microsoft Shared Access Signatures (SAS)"
+    regex: "^sv=[0-9]{4}-[0-9]{2}-[0-9]{2}&ss=b&srt=[0-9]+&sp=r&se=[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z&sig=[a-zA-Z0-9%]+$"
+    verify_url: "https://<storage-account>.blob.core.windows.net/?restype=service&comp=properties&%s"
+    verify_method: "GET"
+    validation:
+      status_code: 200
+      success_indicator:
+        type: "header_exists"
+        key: "x-ms-version"
+
+  - name: "Microsoft Teams Webhook"
+    regex: "^https://[a-zA-Z0-9-]+\\.webhook\\.office\\.com/webhookb2/[a-zA-Z0-9-]+@[a-zA-Z0-9-]+/IncomingWebhook/[a-zA-Z0-9]+/[a-zA-Z0-9-]+$"
+    verify_url: "%s"
+    verify_method: "POST"
+    headers:
+      "Content-Type": "application/json"
+    validation:
+      status_code: 200
+      success_indicator:
+        type: "status_code_only"
+
+  - name: "New Relic Personal API Key (NerdGraph)"
+    regex: "^NRAK-[A-Z0-9]{27}$"
+    verify_url: "https://api.newrelic.com/graphql"
+    verify_method: "POST"
+    headers:
+      "API-Key": "%s"
+      "Content-Type": "application/json"
+    validation:
+      status_code: 200
+      success_indicator:
+        type: "json_key_exists"
+        key: "data"
+
+  - name: "New Relic REST API"
+    regex: "^[A-Fa-f0-9]{40}$"
+    verify_url: "https://api.newrelic.com/v2/applications.json"
+    verify_method: "GET"
+    headers:
+      "X-Api-Key": "%s"
+    validation:
+      status_code: 200
+      success_indicator:
+        type: "json_key_exists"
+        key: "applications"
+
+  - name: "NPM Token"
+    regex: "^npm_[a-zA-Z0-9]{36}$"
     verify_url: "https://registry.npmjs.org/-/whoami"
     verify_method: "GET"
     headers:
       "Authorization": "Bearer %s"
     validation:
       status_code: 200
-      content_type: "application/json"
       success_indicator:
         type: "json_key_exists"
         key: "username"
+
+  - name: "OpsGenie API Key"
+    regex: "^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$"
+    verify_url: "https://api.opsgenie.com/v2/alerts"
+    verify_method: "GET"
+    headers:
+      "Authorization": "GenieKey %s"
+    validation:
+      status_code: 200
+      success_indicator:
+        type: "json_key_exists"
+        key: "data"
+
+  - name: "Pagerduty API Token"
+    regex: "^[a-zA-Z0-9_-]{20}$"
+    verify_url: "https://api.pagerduty.com/users"
+    verify_method: "GET"
+    headers:
+      "Authorization": "Token token=%s"
+    validation:
+      status_code: 200
+      success_indicator:
+        type: "json_key_exists"
+        key: "users"
+
+  - name: "PayPal Client ID and Secret Key"
+    regex: "^[A-Za-z0-9_-]{80}$"
+    verify_url: "https://api-m.paypal.com/v1/oauth2/token"
+    verify_method: "POST"
+    headers:
+      "Authorization": "Basic %s"
+    validation:
+      status_code: 200
+      success_indicator:
+        type: "json_key_exists"
+        key: "access_token"
+
+  - name: "Pendo Integration Key"
+    regex: "^[a-f0-9]{40}$"
+    verify_url: "https://app.pendo.io/api/v1/metadata/schema/account"
+    verify_method: "GET"
+    headers:
+      "X-Pendo-Integration-Key": "%s"
+      "Content-Type": "application/json"
+    validation:
+      status_code: 200
+      success_indicator:
+        type: "json_key_exists"
+        key: "accountProperties"
+
+  - name: "PivotalTracker API Token"
+    regex: "^[a-f0-9]{32}$"
+    verify_url: "https://www.pivotaltracker.com/services/v5/me"
+    verify_method: "GET"
+    headers:
+      "X-TrackerToken": "%s"
+    validation:
+      status_code: 200
+      success_indicator:
+        type: "json_key_exists"
+        key: "id"
+
+  - name: "Razorpay API Key and Secret Key"
+    regex: "^rzp_[a-zA-Z0-9]{14}$"
+    verify_url: "https://api.razorpay.com/v1/customers"
+    verify_method: "GET"
+    headers:
+      "Authorization": "Basic %s"
+    validation:
+      status_code: 200
+      success_indicator:
+        type: "json_key_exists"
+        key: "count"
+
+  - name: "Salesforce API Key"
+    regex: "^[0-9a-f]{15}|[0-9a-f]{18}$"
+    verify_url: "https://login.salesforce.com/services/oauth2/userinfo"
+    verify_method: "GET"
+    headers:
+      "Authorization": "Bearer %s"
+    validation:
+      status_code: 200
+      success_indicator:
+        type: "json_key_exists"
+        key: "user_id"
+
+  - name: "SauceLabs Username and Access Key"
+    regex: "^[a-f0-9]{32}$"
+    verify_url: "https://saucelabs.com/rest/v1/users/USERNAME"
+    verify_method: "GET"
+    headers:
+      "Authorization": "Basic %s"
+    validation:
+      status_code: 200
+      success_indicator:
+        type: "json_key_exists"
+        key: "id"
+
+  - name: "SendGrid API Token"
+    regex: "^SG\\.[a-zA-Z0-9_-]+\\.[a-zA-Z0-9_-]+$"
+    verify_url: "https://api.sendgrid.com/v3/user/credits"
+    verify_method: "GET"
+    headers:
+      "Authorization": "Bearer %s"
+    validation:
+      status_code: 200
+      success_indicator:
+        type: "json_key_exists"
+        key: "total"
+
+  - name: "Shodan.io"
+    regex: "^[a-zA-Z0-9]{32}$"
+    verify_url: "https://api.shodan.io/api-info?key=%s"
+    verify_method: "GET"
+    validation:
+      status_code: 200
+      success_indicator:
+        type: "json_key_exists"
+        key: "plan"
+
+  - name: "Slack API Token"
+    regex: "^xox[baprs]-[0-9]{11}-[0-9]{11}-[0-9]{12}-[a-zA-Z0-9]{32}$"
+    verify_url: "https://slack.com/api/auth.test"
+    verify_method: "POST"
+    headers:
+      "Authorization": "Bearer %s"
+    validation:
+      status_code: 200
+      success_indicator:
+        type: "json_key_value"
+        key: "ok"
+        value: "true"
+
+  - name: "Slack Webhook"
+    regex: "^https://hooks\\.slack\\.com/services/T[a-zA-Z0-9_]{8}/B[a-zA-Z0-9_]{8}/[a-zA-Z0-9_]{24}$"
+    verify_url: "%s"
+    verify_method: "POST"
+    headers:
+      "Content-Type": "application/json"
+    validation:
+      status_code: 200
+      success_indicator:
+        type: "contains_string"
+        value: "ok"
+
+  - name: "Sonarcloud"
+    regex: "^[a-f0-9]{40}$"
+    verify_url: "https://sonarcloud.io/api/authentication/validate"
+    verify_method: "GET"
+    headers:
+      "Authorization": "Basic %s"
+    validation:
+      status_code: 200
+      success_indicator:
+        type: "json_key_value"
+        key: "valid"
+        value: "true"
+
+  - name: "Spotify Access Token"
+    regex: "^[A-Za-z0-9-_]{86}$"
+    verify_url: "https://api.spotify.com/v1/me"
+    verify_method: "GET"
+    headers:
+      "Authorization": "Bearer %s"
+    validation:
+      status_code: 200
+      success_indicator:
+        type: "json_key_exists"
+        key: "id"
+
+  - name: "Square"
+    regex: "^sq0atp-[0-9A-Za-z-_]{22}$"
+    verify_url: "https://connect.squareup.com/v2/locations"
+    verify_method: "GET"
+    headers:
+      "Authorization": "Bearer %s"
+    validation:
+      status_code: 200
+      success_indicator:
+        type: "json_key_exists"
+        key: "locations"
+
+  - name: "Stripe Live Token"
+    regex: "^sk_live_[0-9a-zA-Z]{24}$"
+    verify_url: "https://api.stripe.com/v1/balance"
+    verify_method: "GET"
+    headers:
+      "Authorization": "Bearer %s"
+    validation:
+      status_code: 200
+      success_indicator:
+        type: "json_key_exists"
+        key: "available"
+
+  - name: "Telegram Bot API Token"
+    regex: "^[0-9]{8,10}:[a-zA-Z0-9_-]{35}$"
+    verify_url: "https://api.telegram.org/bot%s/getMe"
+    verify_method: "GET"
+    validation:
+      status_code: 200
+      success_indicator:
+        type: "json_key_value"
+        key: "ok"
+        value: "true"
+
+  - name: "Travis CI API Token"
+    regex: "^[a-zA-Z0-9_-]{22}$"
+    verify_url: "https://api.travis-ci.com/user"
+    verify_method: "GET"
+    headers:
+      "Travis-API-Version": "3"
+      "Authorization": "token %s"
+    validation:
+      status_code: 200
+      success_indicator:
+        type: "json_key_exists"
+        key: "id"
+
+  - name: "Twilio Account_sid and Auth Token"
+    regex: "^[A-Za-z0-9]{34}$"
+    verify_url: "https://api.twilio.com/2010-04-01/Accounts.json"
+    verify_method: "GET"
+    headers:
+      "Authorization": "Basic %s"
+    validation:
+      status_code: 200
+      success_indicator:
+        type: "json_key_exists"
+        key: "accounts"
+
+  - name: "Twitter API Secret"
+    regex: "^[a-zA-Z0-9]{50}$"
+    verify_url: "https://api.twitter.com/1.1/account/verify_credentials.json"
+    verify_method: "GET"
+    headers:
+      "Authorization": "Bearer %s"
+    validation:
+      status_code: 200
+      success_indicator:
+        type: "json_key_exists"
+        key: "id"
+
+  - name: "Twitter Bearer Token"
+    regex: "^[A-Za-z0-9%]{116}$"
+    verify_url: "https://api.twitter.com/1.1/account/verify_credentials.json"
+    verify_method: "GET"
+    headers:
+      "Authorization": "Bearer %s"
+    validation:
+      status_code: 200
+      success_indicator:
+        type: "json_key_exists"
+        key: "id"
+
+  - name: "Visual Studio App Center API Token"
+    regex: "^[a-f0-9]{32}$"
+    verify_url: "https://api.appcenter.ms/v0.1/apps"
+    verify_method: "GET"
+    headers:
+      "X-API-Token": "%s"
+    validation:
+      status_code: 200
+      success_indicator:
+        type: "json_key_exists"
+        key: "total"
+
+  - name: "WakaTime API Key"
+    regex: "^waka_[a-f0-9]{32}$"
+    verify_url: "https://wakatime.com/api/v1/users/current/projects"
+    verify_method: "GET"
+    headers:
+      "Authorization": "Basic %s"
+    validation:
+      status_code: 200
+      success_indicator:
+        type: "json_key_exists"
+        key: "data"
+
+  - name: "WeGlot API Key"
+    regex: "^wg_[a-f0-9]{24}$"
+    verify_url: "https://api.weglot.com/translate?api_key=%s"
+    verify_method: "POST"
+    headers:
+      "Content-Type": "application/json"
+    validation:
+      status_code: 200
+      success_indicator:
+        type: "json_key_exists"
+        key: "to_language"
+
+  - name: "WPEngine API Key"
+    regex: "^[a-f0-9]{32}$"
+    verify_url: "https://api.wpengine.com/1.2/?method=site&account_name=ACCOUNT_NAME&wpe_apikey=%s"
+    verify_method: "GET"
+    validation:
+      status_code: 200
+      success_indicator:
+        type: "json_key_exists"
+        key: "result"
+
+  - name: "YouTube API Key"
+    regex: "^AIza[0-9A-Za-z-_]{35}$"
+    verify_url: "https://www.googleapis.com/youtube/v3/channels?part=id&mine=true&key=%s"
+    verify_method: "GET"
+    validation:
+      status_code: 200
+      success_indicator:
+        type: "json_key_exists"
+        key: "items"
+
+  - name: "Zapier Webhook Token"
+    regex: "^[a-zA-Z0-9]{32}$"
+    verify_url: "%s"
+    verify_method: "POST"
+    headers:
+      "Content-Type": "application/json"
+    validation:
+      status_code: 200
+      success_indicator:
+        type: "contains_string"
+        value: "success"
+
+  - name: "Zendesk Access Token"
+    regex: "^[a-zA-Z0-9]{40}$"
+    verify_url: "https://<subdomain>.zendesk.com/api/v2/users/me.json"
+    verify_method: "GET"
+    headers:
+      "Authorization": "Bearer %s"
+    validation:
+      status_code: 200
+      success_indicator:
+        type: "json_key_exists"
+        key: "user"
+
+  - name: "Zendesk API Key"
+    regex: "^[a-zA-Z0-9]{40}$"
+    verify_url: "https://<subdomain>.zendesk.com/api/v2/users.json"
+    verify_method: "GET"
+    headers:
+      "Authorization": "Basic %s"
+    validation:
+      status_code: 200
+      success_indicator:
+        type: "json_key_exists"
+        key: "users"

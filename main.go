@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 	"sync"
 
 	"github.com/harshinsecurity/mantramatch/internal/config"
@@ -14,14 +15,16 @@ import (
 )
 
 var (
-	configFile string
-	verbose    bool
-	silent     bool
-	timeout    int
-	listFile   string
+	configFile   string
+	verbose      bool
+	silent       bool
+	timeout      int
+	listFile     string
+	listServices bool
 )
 
 func init() {
+	flag.Usage = usage
 	homeDir, _ := os.UserHomeDir()
 	defaultConfigPath := filepath.Join(homeDir, ".config", "mantramatch", "config.yaml")
 	flag.StringVar(&configFile, "config", defaultConfigPath, "Path to configuration file")
@@ -29,7 +32,8 @@ func init() {
 	flag.BoolVar(&silent, "silent", false, "Show only verified API keys and services")
 	flag.IntVar(&timeout, "timeout", 10, "Timeout for HTTP requests in seconds")
 	flag.StringVar(&listFile, "list", "", "Path to file containing list of API keys")
-	flag.Usage = usage
+	flag.BoolVar(&listServices, "ls", false, "List supported services")
+	flag.Parse()
 }
 
 func usage() {
@@ -40,15 +44,19 @@ func usage() {
 	fmt.Fprintf(os.Stderr, "\nExamples:\n")
 	fmt.Fprintf(os.Stderr, "  mantramatch -verbose -timeout=15 your_api_key_here\n")
 	fmt.Fprintf(os.Stderr, "  mantramatch -silent -list=keys.txt\n")
+	fmt.Fprintf(os.Stderr, "  mantramatch -ls\n")
 }
 
 func main() {
-	flag.Parse()
-
 	cfg, err := config.LoadConfig(configFile)
 	if err != nil {
 		fmt.Printf("Error loading configuration: %v\n", err)
 		os.Exit(1)
+	}
+
+	if listServices {
+		printSupportedServices(cfg)
+		return
 	}
 
 	if listFile != "" {
@@ -61,21 +69,26 @@ func main() {
 	}
 }
 
+func printSupportedServices(cfg *config.Config) {
+	fmt.Println("Supported services:")
+	for _, service := range cfg.Services {
+		fmt.Printf("- %s\n", service.Name)
+	}
+}
+
 func processKey(cfg *config.Config, apiKey string) {
 	matchedServices := service.MatchServices(cfg.Services, apiKey)
 	if len(matchedServices) == 0 {
 		if !silent {
+			fmt.Printf("%s : invalid\n", apiKey)
 			fmt.Println("No matching services found for the given API key.")
+			fmt.Println(strings.Repeat("-", 40))
 		}
 		return
 	}
 
-	if !silent {
-		fmt.Printf("Potential matches found: %d\n", len(matchedServices))
-	}
-
 	results := verifyKeys(matchedServices, apiKey)
-	printResults(results, apiKey)
+	printResults(results, apiKey, matchedServices)
 }
 
 func processKeyList(cfg *config.Config) {
@@ -136,23 +149,29 @@ func verifyKeys(services []config.Service, apiKey string) map[string]bool {
 	return results
 }
 
-func printResults(results map[string]bool, apiKey string) {
+func printResults(results map[string]bool, apiKey string, services []config.Service) {
 	foundValid := false
-	for serviceName, valid := range results {
+	for _, s := range services {
+		valid := results[s.Name]
+		status := "invalid"
 		if valid {
-			if silent {
-				fmt.Printf("%s: %s\n", apiKey, serviceName)
-			} else {
-				fmt.Printf("✅ API key is valid for %s\n", serviceName)
-			}
+			status = "valid"
 			foundValid = true
-		} else if !silent {
-			fmt.Printf("❌ API key is not valid for %s\n", serviceName)
+		}
+		fmt.Printf("%s : %s\n", apiKey, status)
+
+		if !silent && s.Note != "" {
+			fmt.Printf("Note: %s\n", s.Note)
+		}
+
+		if !silent {
+			fmt.Println(strings.Repeat("-", 40))
 		}
 	}
 
 	if !foundValid && !silent {
-		fmt.Println("\nNo valid services found for this API key.")
+		fmt.Println("No valid services found for this API key.")
 		fmt.Println("This could mean the key is invalid, expired, or not supported by MantraMatch.")
+		fmt.Println(strings.Repeat("-", 40))
 	}
 }

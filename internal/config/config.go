@@ -8,21 +8,18 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-// SuccessIndicator defines the criteria for a successful API key validation
 type SuccessIndicator struct {
 	Type  string `yaml:"type"`
 	Key   string `yaml:"key,omitempty"`
 	Value string `yaml:"value,omitempty"`
 }
 
-// Validation defines the validation rules for an API service
 type Validation struct {
 	StatusCode       int              `yaml:"status_code"`
 	ContentType      string           `yaml:"content_type,omitempty"`
 	SuccessIndicator SuccessIndicator `yaml:"success_indicator"`
 }
 
-// Service represents an API service configuration
 type Service struct {
 	Name         string            `yaml:"name"`
 	Regex        string            `yaml:"regex"`
@@ -30,16 +27,14 @@ type Service struct {
 	VerifyMethod string            `yaml:"verify_method"`
 	Headers      map[string]string `yaml:"headers,omitempty"`
 	Validation   Validation        `yaml:"validation"`
+	Note         string            `yaml:"note,omitempty"`
 }
 
-// Config holds the entire configuration for MantraMatch
 type Config struct {
 	Services []Service `yaml:"services"`
 }
 
-// LoadConfig reads and parses the configuration file
 func LoadConfig(configPath string) (*Config, error) {
-	// If no config path is provided, use the default
 	if configPath == "" {
 		homeDir, err := os.UserHomeDir()
 		if err != nil {
@@ -48,20 +43,17 @@ func LoadConfig(configPath string) (*Config, error) {
 		configPath = filepath.Join(homeDir, ".config", "mantramatch", "config.yaml")
 	}
 
-	// Read the config file
 	data, err := os.ReadFile(configPath)
 	if err != nil {
 		return nil, fmt.Errorf("error reading config file: %w", err)
 	}
 
-	// Parse the YAML
 	var config Config
 	err = yaml.Unmarshal(data, &config)
 	if err != nil {
 		return nil, fmt.Errorf("error parsing config file: %w", err)
 	}
 
-	// Validate the config
 	if err := validateConfig(&config); err != nil {
 		return nil, fmt.Errorf("invalid configuration: %w", err)
 	}
@@ -69,7 +61,6 @@ func LoadConfig(configPath string) (*Config, error) {
 	return &config, nil
 }
 
-// validateConfig checks if the loaded configuration is valid
 func validateConfig(config *Config) error {
 	if len(config.Services) == 0 {
 		return fmt.Errorf("no services defined in the configuration")
@@ -84,7 +75,6 @@ func validateConfig(config *Config) error {
 	return nil
 }
 
-// validateService checks if a single service configuration is valid
 func validateService(service Service) error {
 	if service.Name == "" {
 		return fmt.Errorf("service name cannot be empty")
@@ -107,7 +97,6 @@ func validateService(service Service) error {
 	return nil
 }
 
-// validateSuccessIndicator checks if the success indicator is valid
 func validateSuccessIndicator(indicator SuccessIndicator) error {
 	validTypes := map[string]bool{
 		"status_code_only": true,
