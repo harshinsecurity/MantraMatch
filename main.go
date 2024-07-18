@@ -63,6 +63,11 @@ func main() {
 
 	cfg, err := config.LoadConfig(configFile)
 	if err != nil {
+		if os.IsNotExist(err) {
+			fmt.Printf("Error: Configuration file not found at %s\n", configFile)
+			fmt.Println("Run 'mantramatch -init-config' to create a default configuration file.")
+			os.Exit(1)
+		}
 		fmt.Printf("Error loading configuration: %v\n", err)
 		os.Exit(1)
 	}

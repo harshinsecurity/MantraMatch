@@ -35,25 +35,9 @@ type Config struct {
 }
 
 func LoadConfig(configPath string) (*Config, error) {
-	if configPath == "" {
-		homeDir, err := os.UserHomeDir()
-		if err != nil {
-			return nil, fmt.Errorf("error getting user home directory: %w", err)
-		}
-		configPath = filepath.Join(homeDir, ".config", "mantramatch", "config.yaml")
-	}
-
-	// Check if the config file exists, if not, create a default one
-	if _, err := os.Stat(configPath); os.IsNotExist(err) {
-		if err := CreateDefaultConfig(configPath); err != nil {
-			return nil, fmt.Errorf("error creating default config: %w", err)
-		}
-		fmt.Printf("Created default configuration file at %s\n", configPath)
-	}
-
 	data, err := os.ReadFile(configPath)
 	if err != nil {
-		return nil, fmt.Errorf("error reading config file: %w", err)
+		return nil, err
 	}
 
 	var config Config
