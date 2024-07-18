@@ -16,7 +16,7 @@ MantraMatch is an open-source tool designed to identify and verify API keys acro
 To install MantraMatch, you need to have Go installed on your system (version 1.16 or later). Then, you can install it directly using `go install`:
 
 ```
-go install github.com/yourusername/mantramatch@latest
+go install github.com/harshinsecurity/mantramatch@latest
 ```
 
 This command will download the source code, compile it, and install the `mantramatch` binary in your `$GOPATH/bin` directory. Make sure this directory is in your system's PATH.
