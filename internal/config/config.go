@@ -112,15 +112,15 @@ func validateSuccessIndicator(indicator SuccessIndicator) error {
 		return fmt.Errorf("invalid success indicator type: %s", indicator.Type)
 	}
 
-	if indicator.Type == "json_key_exists" || indicator.Type == "json_key_value" ||
-		indicator.Type == "header_exists" || indicator.Type == "header_value" {
+	switch indicator.Type {
+	case "json_key_exists", "json_key_value", "header_exists", "header_value":
 		if indicator.Key == "" {
 			return fmt.Errorf("key is required for type %s", indicator.Type)
 		}
 	}
 
-	if indicator.Type == "json_key_value" || indicator.Type == "contains_string" ||
-		indicator.Type == "regex_match" || indicator.Type == "header_value" {
+	switch indicator.Type {
+	case "json_key_value", "contains_string", "regex_match", "header_value":
 		if indicator.Value == "" {
 			return fmt.Errorf("value is required for type %s", indicator.Type)
 		}
