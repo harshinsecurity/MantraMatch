@@ -21,6 +21,7 @@ var (
 	timeout      int
 	listFile     string
 	listServices bool
+	initConfig   bool
 )
 
 func init() {
@@ -33,6 +34,7 @@ func init() {
 	flag.IntVar(&timeout, "timeout", 10, "Timeout for HTTP requests in seconds")
 	flag.StringVar(&listFile, "list", "", "Path to file containing list of API keys")
 	flag.BoolVar(&listServices, "ls", false, "List supported services")
+	flag.BoolVar(&initConfig, "init-config", false, "Initialize default configuration file")
 	flag.Parse()
 }
 
@@ -45,9 +47,20 @@ func usage() {
 	fmt.Fprintf(os.Stderr, "  mantramatch -verbose -timeout=15 your_api_key_here\n")
 	fmt.Fprintf(os.Stderr, "  mantramatch -silent -list=keys.txt\n")
 	fmt.Fprintf(os.Stderr, "  mantramatch -ls\n")
+	fmt.Fprintf(os.Stderr, "  mantramatch -init-config\n")
 }
 
 func main() {
+	if initConfig {
+		err := config.CreateDefaultConfig(configFile)
+		if err != nil {
+			fmt.Printf("Error creating default configuration: %v\n", err)
+			os.Exit(1)
+		}
+		fmt.Printf("Default configuration file created at: %s\n", configFile)
+		os.Exit(0)
+	}
+
 	cfg, err := config.LoadConfig(configFile)
 	if err != nil {
 		fmt.Printf("Error loading configuration: %v\n", err)

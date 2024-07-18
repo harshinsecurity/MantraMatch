@@ -36,12 +36,14 @@ Options:
 - `-timeout`: Timeout for HTTP requests in seconds (default: 10)
 - `-list`: Path to file containing list of API keys
 - `-ls`: List supported services
+- `-init-config`: Initialize default configuration file
 
 Examples:
 ```
 mantramatch -verbose -timeout=15 your_api_key_here
 mantramatch -silent -list=keys.txt
 mantramatch -ls
+mantramatch -init-config
 ```
 
 Output format:
@@ -54,6 +56,12 @@ Note: <note text if available>
 ## Configuration
 
 MantraMatch uses a YAML configuration file to define services, their regex patterns, and verification endpoints. The default location for this file is `~/.config/mantramatch/config.yaml`.
+
+If the configuration file doesn't exist when you run MantraMatch, a default configuration file will be created automatically. You can also create or reset the default configuration file by running:
+
+```
+mantramatch -init-config
+```
 
 Each service in the configuration file should include:
 - `name`: Name of the service
@@ -84,14 +92,13 @@ Example configuration entry:
 
 To add a new service to MantraMatch:
 
-1. Open the `config.yaml` file.
+1. Open the configuration file (default location: `~/.config/mantramatch/config.yaml`).
 2. Add a new service entry following the structure outlined in the [Configuration](#configuration) section.
 3. Ensure the regex pattern accurately matches the API key format for the service.
 4. Provide the correct verification URL and method.
 5. Specify the appropriate headers, if any.
 6. Define the validation criteria, including the success indicator type.
 7. Add a note if there's any additional information users should know about the service or API key.
-8. Test the new service configuration thoroughly.
 
 ## Contributing
 

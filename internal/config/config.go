@@ -43,6 +43,14 @@ func LoadConfig(configPath string) (*Config, error) {
 		configPath = filepath.Join(homeDir, ".config", "mantramatch", "config.yaml")
 	}
 
+	// Check if the config file exists, if not, create a default one
+	if _, err := os.Stat(configPath); os.IsNotExist(err) {
+		if err := CreateDefaultConfig(configPath); err != nil {
+			return nil, fmt.Errorf("error creating default config: %w", err)
+		}
+		fmt.Printf("Created default configuration file at %s\n", configPath)
+	}
+
 	data, err := os.ReadFile(configPath)
 	if err != nil {
 		return nil, fmt.Errorf("error reading config file: %w", err)
@@ -59,6 +67,46 @@ func LoadConfig(configPath string) (*Config, error) {
 	}
 
 	return &config, nil
+}
+
+func CreateDefaultConfig(configPath string) error {
+	defaultConfig := Config{
+		Services: []Service{
+			{
+				Name:         "Example Service",
+				Regex:        "^[a-zA-Z0-9]{32}$",
+				VerifyURL:    "https://api.example.com/verify",
+				VerifyMethod: "GET",
+				Headers: map[string]string{
+					"Authorization": "Bearer %s",
+				},
+				Validation: Validation{
+					StatusCode: 200,
+					SuccessIndicator: SuccessIndicator{
+						Type: "json_key_exists",
+						Key:  "success",
+					},
+				},
+				Note: "This is an example service configuration.",
+			},
+		},
+	}
+
+	data, err := yaml.Marshal(&defaultConfig)
+	if err != nil {
+		return fmt.Errorf("error marshaling default config: %w", err)
+	}
+
+	dir := filepath.Dir(configPath)
+	if err := os.MkdirAll(dir, 0755); err != nil {
+		return fmt.Errorf("error creating config directory: %w", err)
+	}
+
+	if err := os.WriteFile(configPath, data, 0644); err != nil {
+		return fmt.Errorf("error writing default config file: %w", err)
+	}
+
+	return nil
 }
 
 func validateConfig(config *Config) error {
