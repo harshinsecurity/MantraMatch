@@ -117,6 +117,9 @@ func validateSuccessIndicator(indicator SuccessIndicator) error {
 		if indicator.Key == "" {
 			return fmt.Errorf("key is required for type %s", indicator.Type)
 		}
+	}
+
+	switch indicator.Type {
 	case "json_key_value", "contains_string", "regex_match", "header_value":
 		if indicator.Value == "" {
 			return fmt.Errorf("value is required for type %s", indicator.Type)
